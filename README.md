@@ -33,12 +33,12 @@ python -m qreaper.cli analizar datasets/legitimos/ejemplo.png
 
 | # | Módulo | Archivo | Responsable |
 |---|--------|---------|-------------|
-| 1 | Ingesta + Decode | `src/qreaper/decode.py` | JuanFran |
-| 2 | Análisis estático de URL | `src/qreaper/analisis_url.py` | Alex |
+| 1 | Ingesta + Decode | `src/qreaper/decode.py` | Andrés (DAM) |
+| 2 | Análisis estático de URL | `src/qreaper/analisis_url.py` | Alex (teleco) |
 | 3 | Sandbox de detonación | `src/qreaper/sandbox.py` | Jose |
 | 4 | Scoring | `src/qreaper/scoring.py` | Jose |
-| 5 | Informe | `src/qreaper/informe.py` | Andrés |
-| 6 | Interfaz (CLI/web) + Dataset | `src/qreaper/cli.py` | 5ª persona |
+| 5 | Informe | `src/qreaper/informe.py` | JuanFran |
+| 6 | Interfaz (CLI/web) + Dataset | `src/qreaper/cli.py` | Ismael (teleco) |
 
 **Los contratos entre módulos están en [`CONTRATOS.md`](CONTRATOS.md). Léelo ANTES de picar código.**
 
