@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Datos temporales / screenshots
+datasets/tmp/
+*.log
+
+# Secretos (NUNCA subir)
+.env
+*.token
+secrets/
+
+# SO / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,18 @@
+# --- Módulo 1: decode ---
+pyzbar
+opencv-python
+pillow
+pdf2image
+# --- Módulo 2: análisis URL ---
+python-whois
+tldextract
+requests
+# --- Módulo 3: sandbox ---
+playwright
+# --- Módulo 5: informe ---
+reportlab
+jinja2
+# --- Módulo 6 / general ---
+click
+# --- tests ---
+pytest
