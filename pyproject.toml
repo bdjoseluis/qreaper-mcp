@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qreaper"
+version = "0.1.0"
+description = "Analizador anti-quishing: detecta phishing escondido en códigos QR"
+requires-python = ">=3.10"
+# Las dependencias de cada módulo están en requirements.txt (se instalan aparte,
+# así nadie tiene que instalar librerías de módulos que no toca).
+dependencies = ["click"]
+
+[project.scripts]
+qreaper = "qreaper.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+# Gracias a esto, `pytest` funciona sin instalar nada del proyecto.
+pythonpath = ["src"]
+testpaths = ["tests"]

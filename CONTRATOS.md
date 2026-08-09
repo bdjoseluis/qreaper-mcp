@@ -7,7 +7,7 @@ módulo, para que cada persona programe el suyo AISLADO y al final todo encaje.
 
 ---
 
-## [1] decode.py  — JuanFran
+## [1] decode.py  — Andrés
 
 ```python
 def decode(ruta_archivo: str) -> list[str]:
@@ -83,7 +83,7 @@ Ejemplo de salida:
 
 ---
 
-## [5] informe.py  — Andrés
+## [5] informe.py  — JuanFran
 
 ```python
 def generar_informe(resultado: dict, formato: str = "pdf") -> str:
@@ -96,7 +96,7 @@ def generar_informe(resultado: dict, formato: str = "pdf") -> str:
 
 ---
 
-## [6] cli.py  — 5ª persona
+## [6] cli.py  — Ismael
 
 Orquesta la llamada a todo lo anterior a través de `pipeline.analizar_archivo()`.
 No implementa lógica de análisis, solo la interfaz de usuario.
