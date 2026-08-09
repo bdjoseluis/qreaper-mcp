@@ -33,6 +33,25 @@ Y agrupa las tarjetas por **Sprint** (grupos del tablero):
 
 Campos recomendados por tarjeta: **Responsable**, **Estado**, **Prioridad**, **Fecha límite**, **Rama/PR**.
 
+### ⬆️ Importar el tablero de golpe (54 tarjetas)
+
+En vez de crear las tarjetas a mano, súbelas con el fichero ya preparado:
+
+- Excel: [`monday-qreaper.xlsx`](monday-qreaper.xlsx)
+- CSV (por si el Excel da guerra): [`monday-qreaper.csv`](monday-qreaper.csv)
+
+Pasos en Monday:
+
+1. Tablero nuevo → **Add** (o los 3 puntos del tablero) → **Import data** → **Excel/CSV**.
+2. Sube el fichero y marca que **la primera fila son las cabeceras**.
+3. Mapea las columnas así:
+   - `Tarea` → **Item Name** (nombre de la tarjeta)
+   - `Grupo` → **Group** (así te crea solo los 4 sprints)
+   - `Responsable` → **People** *(si aún no están todos en Monday, mapea a **Text** y lo cambias luego)*
+   - `Estado` → **Status** · `Prioridad` → **Status** o **Dropdown**
+   - `Fecha límite` → **Date** · `Rama`, `Módulo`, `Notas` → **Text**
+4. Importar. Repasa que los estados hayan cogido los colores (Backlog / En curso / Hecho).
+
 ---
 
 ## 📅 Sprints
