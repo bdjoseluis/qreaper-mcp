@@ -127,3 +127,41 @@ def test_decode_nombre_unicode(tmp_path):
     img.save(ruta)
     result = decode(str(ruta))
     assert isinstance(result, list)
+
+
+# ── 14. URLs con formato especial (regex actualizado) ──────────────
+def test_es_url_con_puerto():
+    """URLs con puerto deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("https://evil.com:8443/phish")
+    assert _es_url("http://192.168.1.1:80/path")
+
+
+def test_es_url_con_userinfo():
+    """URLs con userinfo (@) deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("https://user@evil.com")
+    assert _es_url("https://admin:pass@evil.com/path")
+
+
+def test_es_url_con_ipv4():
+    """URLs con IPv4 deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("http://192.168.1.1/phish")
+    assert _es_url("https://10.0.0.1:8080/path?q=1")
+
+
+def test_es_url_con_localhost():
+    """URLs con hostname simple (localhost) deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("http://localhost/path")
+    assert _es_url("https://mi-servidor")
+
+
+def test_es_url_rechaza_texto_no_url():
+    """Textos que no son URLs deben ser rechazados."""
+    from qreaper.decode import _es_url
+    assert not _es_url("hola mundo")
+    assert not _es_url("https://")
+    assert not _es_url("12345")
+    assert not _es_url("")
