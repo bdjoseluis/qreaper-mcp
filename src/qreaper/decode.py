@@ -27,8 +27,10 @@ EML_EXT = ".eml"
 
 _URL_RE = re.compile(
     r"^https?://"                          # protocolo
+    r"(?:[a-zA-Z0-9._~!$&'()*+,;=:@-]*@)?"  # userinfo opcional
     r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+"  # subdominios
     r"[a-zA-Z]{2,}"                        # TLD mínimo 2 chars
+    r"(?::\d{1,5})?"                       # puerto opcional
     r"(?:/[^\s]*)?$"                       # path opcional
 )
 
@@ -145,12 +147,9 @@ def _procesar_imagen(ruta: str) -> list[str]:
     # Decodificar QR de la imagen original
     textos.extend(_decodificar_qr_de_imagen(img))
 
-    # Intentar con preprocesamiento si no se encontro nada
-    if not textos:
-        for img_proc in _preprocesar_imagen(img):
-            textos.extend(_decodificar_qr_de_imagen(img_proc))
-            if textos:
-                break
+    # Intentar con preprocesamiento para capturar QRs adicionales
+    for img_proc in _preprocesar_imagen(img):
+        textos.extend(_decodificar_qr_de_imagen(img_proc))
 
     return textos
 
@@ -199,6 +198,22 @@ def _procesar_eml(ruta: str) -> list[str]:
                         textos.extend(_decodificar_qr_de_imagen(img))
             except Exception as e:
                 log.debug("Error procesando adjunto del email: %s", e)
+                continue
+        elif content_type == "application/pdf":
+            try:
+                import tempfile
+                import os
+                payload = parte.get_payload(decode=True)
+                if payload:
+                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                        tmp.write(payload)
+                        tmp.flush()
+                    try:
+                        textos.extend(_procesar_pdf(tmp.name))
+                    finally:
+                        os.unlink(tmp.name)
+            except Exception as e:
+                log.debug("Error procesando PDF adjunto del email: %s", e)
                 continue
 
     return textos
