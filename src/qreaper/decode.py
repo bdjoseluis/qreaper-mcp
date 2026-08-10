@@ -7,7 +7,9 @@ Lee el contrato en CONTRATOS.md antes de empezar.
 from __future__ import annotations
 
 import logging
+import os
 import re
+import tempfile
 from email import policy
 from email.parser import BytesParser
 from pathlib import Path
@@ -26,24 +28,25 @@ PDF_EXT = ".pdf"
 EML_EXT = ".eml"
 
 _URL_RE = re.compile(
-    r"^https?://"                          # protocolo
+    r"^https?://"
     r"(?:[a-zA-Z0-9._~!$&'()*+,;=:@-]*@)?"  # userinfo opcional
-    r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+"  # subdominios
-    r"[a-zA-Z]{2,}"                        # TLD mínimo 2 chars
+    r"(?:"                                     # host (alternativas):
+        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}"  # dominio
+        r"|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"  # IPv4
+        r"|[a-zA-Z0-9-]+"                         # hostname simple (localhost, etc.)
+    r")"
     r"(?::\d{1,5})?"                       # puerto opcional
     r"(?:/[^\s]*)?$"                       # path opcional
 )
 
 MAX_PAGINAS_PDF = 50
+PDF_DPI = 300
 
 
 def _es_url(texto: str) -> bool:
     """Devuelve True si el texto parece una URL."""
     texto = texto.strip()
-    match = _URL_RE.search(texto)
-    if not match:
-        return False
-    return match.group() == texto
+    return _URL_RE.fullmatch(texto) is not None
 
 
 def _extraer_urls(datos_qr: list[str]) -> list[str]:
@@ -165,7 +168,7 @@ def _procesar_pdf(ruta: str) -> list[str]:
         return []
 
     try:
-        imagenes = convert_from_path(ruta, dpi=300, first_page=1, last_page=MAX_PAGINAS_PDF)
+        imagenes = convert_from_path(ruta, dpi=PDF_DPI, first_page=1, last_page=MAX_PAGINAS_PDF)
         for imagen_pil in imagenes:
             img_array = cv2.cvtColor(np.array(imagen_pil.convert("RGB")), cv2.COLOR_RGB2BGR)
             textos.extend(_decodificar_qr_de_imagen(img_array))
@@ -201,8 +204,6 @@ def _procesar_eml(ruta: str) -> list[str]:
                 continue
         elif content_type == "application/pdf":
             try:
-                import tempfile
-                import os
                 payload = parte.get_payload(decode=True)
                 if payload:
                     with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
