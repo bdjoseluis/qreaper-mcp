@@ -24,8 +24,13 @@ peso tiene en la nota.
 
 ## Antes de nada
 
-Si todavía no has montado el proyecto: **[`ARRANCA-AQUI.md`](../../ARRANCA-AQUI.md)**.
-Vuelve aquí cuando `pytest` te funcione.
+> 🟢 **¿No has usado GitHub nunca?** Empieza por
+> **[`ISMAEL-EMPIEZA-AQUI.md`](ISMAEL-EMPIEZA-AQUI.md)**: qué es GitHub, cómo
+> crearte la cuenta y cómo trabajar con botones en vez de con la consola.
+> Vuelve aquí después.
+
+Si ya lo tienes: **[`ARRANCA-AQUI.md`](../../ARRANCA-AQUI.md)** para montar el
+proyecto. Vuelve aquí cuando `pytest` te funcione.
 
 ```powershell
 pip install click
