@@ -161,17 +161,34 @@ def _procesar_pdf(ruta: str) -> list[str]:
     """Convierte paginas del PDF a imagenes y decodifica QR."""
     textos: list[str] = []
 
+    # Intentar con pdf2image (poppler) primero
     try:
         from pdf2image import convert_from_path
-    except ImportError:
-        log.error("pdf2image no esta instalado. Instalar con: pip install pdf2image")
-        return []
-
-    try:
         imagenes = convert_from_path(ruta, dpi=PDF_DPI, first_page=1, last_page=MAX_PAGINAS_PDF)
         for imagen_pil in imagenes:
             img_array = cv2.cvtColor(np.array(imagen_pil.convert("RGB")), cv2.COLOR_RGB2BGR)
             textos.extend(_decodificar_qr_de_imagen(img_array))
+        return textos
+    except Exception as e:
+        log.debug("pdf2image fallo, intentando con PyMuPDF: %s", e)
+
+    # Fallback: usar PyMuPDF (fitz)
+    try:
+        import fitz
+        doc = fitz.open(ruta)
+        for i, page in enumerate(doc):
+            if i >= MAX_PAGINAS_PDF:
+                break
+            pix = page.get_pixmap(dpi=PDF_DPI)
+            img = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.h, pix.w, pix.n)
+            if pix.n == 4:
+                img_bgr = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+            elif pix.n == 3:
+                img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+            else:
+                img_bgr = img
+            textos.extend(_decodificar_qr_de_imagen(img_bgr))
+        doc.close()
     except Exception as e:
         log.error("Error procesando PDF %s: %s", ruta, e)
 

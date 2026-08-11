@@ -165,3 +165,42 @@ def test_es_url_rechaza_texto_no_url():
     assert not _es_url("https://")
     assert not _es_url("12345")
     assert not _es_url("")
+
+
+# ── 15. Soporte para emails .eml ──────────────────────────────────
+DATASETS_TEST = RAIZ / "datasets" / "test"
+
+
+def test_decode_phishing_correo():
+    """Debe decodificar QR de un email .eml con imagen adjunta."""
+    urls = decode(str(DATASETS_TEST / "phishing_correo.eml"))
+    assert len(urls) > 0, "No se encontraron URLs en el email phishing"
+    assert any("correos-es.top" in u for u in urls), f"Se esperaba 'correos-es.top' en {urls}"
+
+
+def test_decode_legitimo_correo():
+    """Debe decodificar QR de un email .eml legítimo."""
+    urls = decode(str(DATASETS_TEST / "legitimo_correo.eml"))
+    assert len(urls) > 0, "No se encontraron URLs en el email legítimo"
+    assert any("b-dev.es" in u for u in urls), f"Se esperaba 'b-dev.es' en {urls}"
+
+
+def test_decode_multiples_adjuntos():
+    """Debe decodificar QR de múltiples adjuntos en un email."""
+    urls = decode(str(DATASETS_TEST / "phishing_multiples.eml"))
+    assert len(urls) >= 2, f"Se esperaban >=2 URLs, se obtuvieron {len(urls)}: {urls}"
+
+
+# ── 16. Soporte para PDFs ─────────────────────────────────────────
+def test_decode_pdf_phishing():
+    """Debe decodificar QR de un PDF con QR embebido."""
+    urls = decode(str(DATASETS_TEST / "phishing_documento.pdf"))
+    assert len(urls) > 0, "No se encontraron URLs en el PDF phishing"
+    assert any("bbva-seguridad.top" in u for u in urls), f"Se esperaba 'bbva-seguridad.top' en {urls}"
+
+
+def test_decode_pdf_legitimo():
+    """Debe decodificar QR de un PDF legítimo."""
+    urls = decode(str(DATASETS_TEST / "legitimo_documento.pdf"))
+    assert len(urls) > 0, "No se encontraron URLs en el PDF legítimo"
+    assert any("google.com" in u for u in urls), f"Se esperaba 'google.com' en {urls}"
