@@ -206,7 +206,7 @@ def cli(ctx: click.Context, no_color: bool):
 @click.pass_context
 def analizar(ctx: click.Context, ruta_archivo: Path, formato: str, as_json: bool, verbose: bool):
     """Analiza un archivo (email/PDF/imagen) en busca de quishing."""
-    no_color = ctx.obj.get("no_color", False)
+no_color = ctx.obj.get("no_color", False)
 
     try:
         resultados = pipeline.analizar_archivo(str(ruta_archivo), formato)

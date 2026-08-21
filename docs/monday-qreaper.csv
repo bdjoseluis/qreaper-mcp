@@ -1,0 +1,55 @@
+﻿Tarea,Grupo,Responsable,Estado,Prioridad,Fecha límite,Rama,Módulo,Notas
+"Crear repo, estructura y CONTRATOS.md",Sprint 0 — Setup (5-10 ago),Jose Luis,Hecho,Alta,2026-08-05,feat/nucleo-jose,nucleo,Ya está en GitHub: github.com/bdjoseluis/qreaper
+Dar acceso a los 4 colaboradores en GitHub,Sprint 0 — Setup (5-10 ago),Jose Luis,En curso,Alta,2026-08-07,feat/nucleo-jose,nucleo,Hacen falta los usuarios de GitHub de cada uno
+Proteger la rama main (PR obligatorio),Sprint 0 — Setup (5-10 ago),Jose Luis,Backlog,Media,2026-08-08,feat/nucleo-jose,nucleo,Settings > Branches > Add rule
+Crear tablero Monday y pegar enlace en docs/ORGANIZACION.md,Sprint 0 — Setup (5-10 ago),Jose Luis,En curso,Media,2026-08-07,feat/nucleo-jose,nucleo,
+Crear carpeta Drive compartida y pegar enlace,Sprint 0 — Setup (5-10 ago),Jose Luis,Backlog,Baja,2026-08-08,feat/nucleo-jose,nucleo,
+Clonar el repo y montar el entorno (venv + requirements),Sprint 0 — Setup (5-10 ago),Andrés,Backlog,Alta,2026-08-08,feat/decode-andres,decode.py,git clone + python -m venv .venv + pip install -r requirements.txt
+Cambiar a mi rama y ejecutar el stub de mi módulo,Sprint 0 — Setup (5-10 ago),Andrés,Backlog,Alta,2026-08-10,feat/decode-andres,decode.py,git checkout <mi rama>; leer CONTRATOS.md antes de tocar nada
+Clonar el repo y montar el entorno (venv + requirements),Sprint 0 — Setup (5-10 ago),Alex,Backlog,Alta,2026-08-08,feat/analisis-url-alex,analisis_url.py,git clone + python -m venv .venv + pip install -r requirements.txt
+Cambiar a mi rama y ejecutar el stub de mi módulo,Sprint 0 — Setup (5-10 ago),Alex,Backlog,Alta,2026-08-10,feat/analisis-url-alex,analisis_url.py,git checkout <mi rama>; leer CONTRATOS.md antes de tocar nada
+Clonar el repo y montar el entorno (venv + requirements),Sprint 0 — Setup (5-10 ago),JuanFran,Backlog,Alta,2026-08-08,feat/informe-juanfran,informe.py,git clone + python -m venv .venv + pip install -r requirements.txt
+Cambiar a mi rama y ejecutar el stub de mi módulo,Sprint 0 — Setup (5-10 ago),JuanFran,Backlog,Alta,2026-08-10,feat/informe-juanfran,informe.py,git checkout <mi rama>; leer CONTRATOS.md antes de tocar nada
+Clonar el repo y montar el entorno (venv + requirements),Sprint 0 — Setup (5-10 ago),Ismael,Backlog,Alta,2026-08-08,feat/interfaz-ismael,cli.py,git clone + python -m venv .venv + pip install -r requirements.txt
+Cambiar a mi rama y ejecutar el stub de mi módulo,Sprint 0 — Setup (5-10 ago),Ismael,Backlog,Alta,2026-08-10,feat/interfaz-ismael,cli.py,git checkout <mi rama>; leer CONTRATOS.md antes de tocar nada
+Leer CONTRATOS.md y confirmar que entiendo mi interfaz,Sprint 0 — Setup (5-10 ago),Jose Luis,Backlog,Alta,2026-08-10,feat/nucleo-jose,nucleo,Todo el equipo debe hacerlo
+Sandbox: Playwright headless dentro de Docker,Sprint 1 — Módulos funcionales (11-24 ago),Jose Luis,Backlog,Alta,2026-08-14,feat/nucleo-jose,nucleo,
+Seguir redirecciones y capturar la URL final,Sprint 1 — Módulos funcionales (11-24 ago),Jose Luis,Backlog,Alta,2026-08-17,feat/nucleo-jose,nucleo,
+Screenshot de la página de destino,Sprint 1 — Módulos funcionales (11-24 ago),Jose Luis,Backlog,Media,2026-08-19,feat/nucleo-jose,nucleo,
+Detectar formularios de login en la página,Sprint 1 — Módulos funcionales (11-24 ago),Jose Luis,Backlog,Alta,2026-08-21,feat/nucleo-jose,nucleo,
+Motor de scoring: señales -> nota 0-100 + veredicto,Sprint 1 — Módulos funcionales (11-24 ago),Jose Luis,Backlog,Alta,2026-08-24,feat/nucleo-jose,nucleo,
+Parsear correos .eml y extraer imágenes adjuntas,Sprint 1 — Módulos funcionales (11-24 ago),Andrés,Backlog,Alta,2026-08-14,feat/decode-andres,decode.py,
+Extraer imágenes de PDF (pdf2image),Sprint 1 — Módulos funcionales (11-24 ago),Andrés,Backlog,Media,2026-08-17,feat/decode-andres,decode.py,
+Decodificar QR de una imagen (pyzbar / OpenCV),Sprint 1 — Módulos funcionales (11-24 ago),Andrés,Backlog,Alta,2026-08-19,feat/decode-andres,decode.py,
+"Preprocesar imágenes malas (enderezar, limpiar, contraste)",Sprint 1 — Módulos funcionales (11-24 ago),Andrés,Backlog,Media,2026-08-21,feat/decode-andres,decode.py,
+Soportar QR partidos / anidados,Sprint 1 — Módulos funcionales (11-24 ago),Andrés,Backlog,Baja,2026-08-23,feat/decode-andres,decode.py,
+Devolver lista de URLs únicas (según CONTRATOS.md),Sprint 1 — Módulos funcionales (11-24 ago),Andrés,Backlog,Alta,2026-08-24,feat/decode-andres,decode.py,
+Edad y datos del dominio (whois),Sprint 1 — Módulos funcionales (11-24 ago),Alex,Backlog,Alta,2026-08-14,feat/analisis-url-alex,analisis_url.py,
+"Clasificar TLD por riesgo (.zip, .top, .xyz...)",Sprint 1 — Módulos funcionales (11-24 ago),Alex,Backlog,Media,2026-08-16,feat/analisis-url-alex,analisis_url.py,
+Detectar typosquatting / homoglifos vs lista de marcas,Sprint 1 — Módulos funcionales (11-24 ago),Alex,Backlog,Alta,2026-08-19,feat/analisis-url-alex,analisis_url.py,
+Expandir acortadores (bit.ly -> destino real),Sprint 1 — Módulos funcionales (11-24 ago),Alex,Backlog,Alta,2026-08-21,feat/analisis-url-alex,analisis_url.py,
+"Detectar deep-links (telegram://, intent://)",Sprint 1 — Módulos funcionales (11-24 ago),Alex,Backlog,Media,2026-08-23,feat/analisis-url-alex,analisis_url.py,
+Devolver diccionario de señales (según CONTRATOS.md),Sprint 1 — Módulos funcionales (11-24 ago),Alex,Backlog,Alta,2026-08-24,feat/analisis-url-alex,analisis_url.py,
+Plantilla de informe en PDF (reportlab),Sprint 1 — Módulos funcionales (11-24 ago),JuanFran,Backlog,Alta,2026-08-17,feat/informe-juanfran,informe.py,
+Versión JSON y HTML del informe,Sprint 1 — Módulos funcionales (11-24 ago),JuanFran,Backlog,Media,2026-08-20,feat/informe-juanfran,informe.py,
+Volcar en el informe: URL + señales + screenshot + nota + recomendación,Sprint 1 — Módulos funcionales (11-24 ago),JuanFran,Backlog,Alta,2026-08-24,feat/informe-juanfran,informe.py,
+Montar dataset: 30 QR legítimos,Sprint 1 — Módulos funcionales (11-24 ago),JuanFran,Backlog,Media,2026-08-21,feat/informe-juanfran,informe.py,
+Montar dataset: 30 QR maliciosos / simulados,Sprint 1 — Módulos funcionales (11-24 ago),JuanFran,Backlog,Media,2026-08-24,feat/informe-juanfran,informe.py,
+CLI: qreaper analizar imagen.png -> veredicto en consola,Sprint 1 — Módulos funcionales (11-24 ago),Ismael,Backlog,Alta,2026-08-18,feat/interfaz-ismael,cli.py,
+"Formatear la salida de consola (colores, claridad)",Sprint 1 — Módulos funcionales (11-24 ago),Ismael,Backlog,Media,2026-08-22,feat/interfaz-ismael,cli.py,
+Escribir el README de uso (cómo se instala y se ejecuta),Sprint 1 — Módulos funcionales (11-24 ago),Ismael,Backlog,Media,2026-08-24,feat/interfaz-ismael,cli.py,
+Integrar los módulos en pipeline.py,Sprint 2 — Integración (25 ago-1 sep),Jose Luis,Backlog,Alta,2026-08-28,feat/nucleo-jose,nucleo,
+Revisar los PR del equipo y mergear a main,Sprint 2 — Integración (25 ago-1 sep),Jose Luis,Backlog,Alta,2026-09-01,feat/nucleo-jose,nucleo,
+Pruebas end-to-end: email con QR -> informe final,Sprint 2 — Integración (25 ago-1 sep),Jose Luis,Backlog,Alta,2026-09-01,feat/nucleo-jose,nucleo,
+Ajustar el scoring con los resultados del dataset,Sprint 2 — Integración (25 ago-1 sep),Jose Luis,Backlog,Media,2026-09-01,feat/nucleo-jose,nucleo,
+Conectar decode con el pipeline y probar con emails reales,Sprint 2 — Integración (25 ago-1 sep),Andrés,Backlog,Alta,2026-08-28,feat/decode-andres,decode.py,
+Afinar detección con los falsos negativos del dataset,Sprint 2 — Integración (25 ago-1 sep),Alex,Backlog,Media,2026-09-01,feat/analisis-url-alex,analisis_url.py,
+Informe de ejemplo terminado para la demo,Sprint 2 — Integración (25 ago-1 sep),JuanFran,Backlog,Alta,2026-09-01,feat/informe-juanfran,informe.py,
+Web simple: subir imagen/email y ver el resultado,Sprint 2 — Integración (25 ago-1 sep),Ismael,Backlog,Media,2026-09-01,feat/interfaz-ismael,cli.py,
+Guion y ensayo de la demo en vivo,Sprint 3 — Pulido + demo + memoria (2-5 sep),Jose Luis,Backlog,Alta,2026-09-04,feat/nucleo-jose,nucleo,
+Últimos bugs y limpieza de código,Sprint 3 — Pulido + demo + memoria (2-5 sep),Jose Luis,Backlog,Media,2026-09-05,feat/nucleo-jose,nucleo,
+Memoria: arquitectura y decisiones técnicas,Sprint 3 — Pulido + demo + memoria (2-5 sep),Ismael,Backlog,Alta,2026-09-04,feat/interfaz-ismael,cli.py,
+Memoria: resultados y métricas del dataset,Sprint 3 — Pulido + demo + memoria (2-5 sep),JuanFran,Backlog,Alta,2026-09-04,feat/informe-juanfran,informe.py,
+Memoria: apartado de análisis de URL y amenazas,Sprint 3 — Pulido + demo + memoria (2-5 sep),Alex,Backlog,Media,2026-09-04,feat/analisis-url-alex,analisis_url.py,
+Memoria: apartado de decodificación e ingesta,Sprint 3 — Pulido + demo + memoria (2-5 sep),Andrés,Backlog,Media,2026-09-04,feat/decode-andres,decode.py,
+Repaso final: que todo arranque desde cero en un PC limpio,Sprint 3 — Pulido + demo + memoria (2-5 sep),Jose Luis,Backlog,Alta,2026-09-05,feat/nucleo-jose,nucleo,
