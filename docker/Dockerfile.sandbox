@@ -1,0 +1,42 @@
+# Sandbox de detonación de QReaper
+#
+# Imagen desechable donde se abren las URLs sospechosas. Trae Chromium y
+# Playwright ya instalados, así que aquí solo metemos nuestro código.
+#
+# La versión de la imagen TIENE que coincidir con la de la librería
+# playwright del proyecto (hoy 1.62.0). Si actualizas requirements.txt,
+# actualiza también esta etiqueta o Playwright se quejará de que el
+# navegador no es el suyo.
+#
+# Construir (desde la raíz del repo):
+#     python -m qreaper.sandbox --construir-imagen
+#   o docker build -f docker/Dockerfile.sandbox -t qreaper-sandbox:latest .
+FROM mcr.microsoft.com/playwright/python:v1.62.0-noble
+
+WORKDIR /app
+
+# La imagen trae los NAVEGADORES ya instalados (en /ms-playwright) pero no la
+# librería de Python que los maneja, así que la ponemos nosotros. La versión
+# tiene que ser la misma que la etiqueta de arriba y la de requirements.txt.
+RUN pip install --no-cache-dir --disable-pip-version-check playwright==1.62.0
+
+# Solo el paquete: el sandbox no necesita ni OpenCV ni pyzbar ni nada del
+# resto de módulos. Cuanto menos haya dentro, menos superficie de ataque.
+COPY src/qreaper/__init__.py  /app/src/qreaper/__init__.py
+COPY src/qreaper/sandbox.py   /app/src/qreaper/sandbox.py
+
+ENV PYTHONPATH=/app/src \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    QREAPER_EN_CONTENEDOR=1 \
+    QREAPER_SANDBOX=local \
+    QREAPER_DIR_CAPTURAS=/salidas
+
+# Carpeta donde deja las capturas. Por fuera se monta sobre datasets/tmp.
+RUN mkdir -p /salidas && chown pwuser:pwuser /salidas
+
+# Nada de root: el contenedor se lanza además con --cap-drop ALL y
+# --security-opt no-new-privileges desde sandbox.py.
+USER pwuser
+
+ENTRYPOINT ["python", "-m", "qreaper.sandbox"]
