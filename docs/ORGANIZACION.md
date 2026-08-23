@@ -65,6 +65,15 @@ Pasos en Monday:
 
 ---
 
+## 📄 Hoja de ruta individual
+
+Cada uno tiene su archivo con su contrato, sus tareas, código de arranque y las
+trampas típicas ya resueltas — para no tener que leerse el proyecto entero:
+
+[`ANDRES.md`](equipo/ANDRES.md) · [`ALEX.md`](equipo/ALEX.md) · [`JUANFRAN.md`](equipo/JUANFRAN.md) · [`ISMAEL.md`](equipo/ISMAEL.md) · [`JOSE.md`](equipo/JOSE.md)
+
+---
+
 ## ✅ Tareas por persona (copiar como tarjetas en Monday)
 
 ### 🔷 Jose Luis — Núcleo + Lead

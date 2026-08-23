@@ -128,6 +128,20 @@ playwright install chromium
 
 ## 6. A trabajar
 
+**👉 Tienes tu propia hoja de ruta.** Ahí está tu contrato, tus tareas, el
+código para arrancar y las trampas típicas ya resueltas. Es lo único que
+necesitas leer aparte de esto:
+
+| | |
+|---|---|
+| Andrés | [`docs/equipo/ANDRES.md`](docs/equipo/ANDRES.md) |
+| Alex | [`docs/equipo/ALEX.md`](docs/equipo/ALEX.md) |
+| JuanFran | [`docs/equipo/JUANFRAN.md`](docs/equipo/JUANFRAN.md) |
+| Ismael | [`docs/equipo/ISMAEL.md`](docs/equipo/ISMAEL.md) |
+| Jose Luis | [`docs/equipo/JOSE.md`](docs/equipo/JOSE.md) |
+
+Y el resumen de lo que hay que hacer:
+
 1. **Lee [`CONTRATOS.md`](CONTRATOS.md).** Es lo más importante del repo: dice
    exactamente qué recibe y qué devuelve tu función. Si no lo respetas, tu
    trabajo no encaja con el de los demás.
