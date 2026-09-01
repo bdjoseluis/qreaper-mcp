@@ -7,6 +7,9 @@ reventar. Estos tests no tocan la red: el sandbox va siempre mockeado.
 """
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 
 from qreaper import pipeline, sandbox
@@ -28,14 +31,30 @@ def sin_red(monkeypatch):
 
 
 # ── El pipeline aguanta con módulos a medio hacer ───────────────────
-def test_pipeline_no_revienta_con_modulos_sin_implementar():
-    """analisis_url e informe lanzan NotImplementedError: no debe propagarse."""
+def test_pipeline_no_revienta_con_modulos_sin_implementar(tmp_path, monkeypatch):
+    """analisis_url lanza NotImplementedError: no debe propagarse."""
+    monkeypatch.chdir(tmp_path)  # que el informe no se escriba en el repo
     res = pipeline.analizar_url_suelta("https://correos-es.top/pago", formato_informe="json")
 
     assert isinstance(res, dict)
     assert res["url"] == "https://correos-es.top/pago"
     assert "analisis_url" in res["errores"], "el fallo de Alex tiene que quedar apuntado"
-    assert "informe" in res["errores"], "el fallo de JuanFran tiene que quedar apuntado"
+
+
+def test_pipeline_genera_el_informe_aunque_falten_modulos(tmp_path, monkeypatch):
+    """Con analisis_url a medias, el informe tiene que salir igual y avisar."""
+    monkeypatch.chdir(tmp_path)
+    res = pipeline.analizar_url_suelta("https://correos-es.top/pago", formato_informe="json")
+
+    assert "informe" not in res["errores"], "el informe ya no debería fallar"
+    assert res["informe"], "el pipeline tiene que guardar la ruta del informe"
+
+    generado = Path(res["informe"])
+    assert generado.exists()
+    contenido = json.loads(generado.read_text(encoding="utf-8"))
+    assert contenido["veredicto"] == res["scoring"]["veredicto"]
+    # El informe tiene que dejar constancia de lo que NO se pudo analizar.
+    assert "analisis_url" in contenido["analisis"]["errores"]
 
 
 def test_pipeline_sigue_puntuando_aunque_falte_analisis_url():

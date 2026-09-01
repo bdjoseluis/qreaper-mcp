@@ -10,8 +10,10 @@ requests
 # --- Módulo 3: sandbox ---
 playwright
 # --- Módulo 5: informe ---
+# Solo el PDF necesita librería externa. El HTML se monta con la biblioteca
+# estándar a propósito: un informe no puede depender de más cosas que puedan
+# fallar al instalar.
 reportlab
-jinja2
 # --- Módulo 6 / general ---
 click
 # --- tests ---
