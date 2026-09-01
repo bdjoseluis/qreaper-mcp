@@ -16,5 +16,7 @@ playwright
 reportlab
 # --- Módulo 6 / general ---
 click
+# --- generacion de fixtures (scripts/generar_fixtures_qr.py) ---
+qrcode[pil]
 # --- tests ---
 pytest
