@@ -20,3 +20,16 @@ secrets/
 Thumbs.db
 .vscode/
 .idea/
+
+# fixtures generados por scripts/generar_fixtures_qr.py (regenerables)
+tests/fixtures/campanas_reales/*.eml
+tests/fixtures/campanas_reales/*.pdf
+tests/fixtures/campanas_reales/*.png
+
+# informes generados en la demo
+demo/informes/*.html
+demo/informes/*.pdf
+demo/informes/*.json
+
+# capturas de pantalla de las detonaciones
+datasets/tmp/

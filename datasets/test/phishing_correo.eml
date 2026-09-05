@@ -1,0 +1,35 @@
+Content-Type: multipart/mixed; boundary="===============9070433435854958212=="
+MIME-Version: 1.0
+Subject: Factura pendiente de pago
+From: factura@correos-es.top
+To: victima@ejemplo.com
+
+--===============9070433435854958212==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+Por favor revisa el documento adjunto.
+--===============9070433435854958212==
+Content-Type: image/png
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="factura.png"
+
+iVBORw0KGgoAAAANSUhEUgAAAXIAAAFyAQAAAADAX2ykAAAC6klEQVR4nO1aXWrkMAyWlEAfE+gB
+epTMDfZMPdLeIDnKHGAheSw4aJHkZLopOB7oBqfR92CI9RGEhX4sGRmewUBP0QGcnwbtyLdwfhq0
+I9/C+WnQjnwL56dBO/ItnH+F88GIGh4LwFQD3qZFdjtQn3zQE9wL8zsWjAC6QCfL0AJwD5WKuGz9
+s0EX5U/RQ/EGM/L72wcCNB9xz9z5UH1yQdnMa/LrzTcDhFr8lxHgRZZj9SHn/+fzmTTr1sB9EyQ+
+f/f/06Ad+RbOzzufhlltiTeoWFOvJmGNz8wctvxckPNLOJ9BS2SxqsJMO2nwnq18PlafbFA+9cL5
+l9dvhmlGGJb6CqDhovUn5+fcf2/qqxOKaTVSV2LWSpYZY07+xM8HOb8E/x1aQIYm1KihuRtnEcw1
+wCRBWz35EH3I+d96PmDNC21o6AJL1Wyls+yZO2sLpPfzT4OKtC/3zbLwKA2rUQw6Snx+CNy+57Uv
+r61JMahJOg6yt/Qn3X/PXF9BxYhvYsY74qOrgdKujEXWgfrkg57gXvp+FLR+tv4kdjzX0YubIJRq
+6VSWpj85Pw2OwTcsbSqNz5aJQRDjs+ffc+ffKlZVduttYsIFKbI8/57evr24qQ0UmmCl1aebks2E
+vX4+bf5F+5A2VXd/YRxko+tn2awCDL94oZSmPzk/q76aWoSO1dIzQvf7NaC1rvRTbk/G9/NMgwr1
+30bK5Ok1MEyxXRkFgqH9s5TTpelPzk+D/4UVzHb/bTQTxz3Pvz/i/SToLMHqK5BKWgZL8fM4ffJB
+T3AvzO/WJqVU0jbp7+4y1RcnliQcfbpQ/bNBF38/CbEXqZfgYA87YGgr9vnvqe27QmtlHuNUny0n
+20udU+i/A7o4HxFfLD7ze7tGavb5/tn7zwLrRWoTa+lPGnz++1PeT6IucSoIy5sOmxQeqE82KJ96
+SX795f1k/LItXmXe3zilfcn5SVBa/AXOT4N25Fs4Pw3akW/h/DRKO5+/uvSrE2iRH6cAAAAASUVO
+RK5CYII=
+
+--===============9070433435854958212==--

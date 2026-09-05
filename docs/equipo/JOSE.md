@@ -41,32 +41,77 @@ sacados de campañas reales, incluido el que más importa: *un banco legítimo
 pidiendo login NO puede dar PELIGRO* (si el detector alarma con logins normales,
 el usuario deja de hacerle caso y la herramienta no sirve).
 
+**`sandbox.py` en Docker** — la detonación ya ocurre dentro de un contenedor
+desechable (`docker/Dockerfile.sandbox`). `detonar()` elige motor solo:
+contenedor si la imagen está construida, Chromium local si no. El resultado
+trae una clave `aislamiento` (`"contenedor"` | `"navegador"`) para que el
+informe pueda decir con qué nivel se analizó. Detalle abajo.
+
+**`pipeline.py` a prueba de módulos a medias** — que Alex o JuanFran no hayan
+terminado ya no tumba el análisis: cada etapa va envuelta, el fallo se apunta
+en `resultado["errores"]` y la cadena sigue. **Esto desatasca a Ismael**: puede
+montar la CLI hoy contra el pipeline de verdad y ver resultados reales de
+decode + sandbox + scoring, con los huecos marcados.
+
 ### 🔜 Pendiente
 
-- [ ] **Meter el sandbox en Docker** ← lo siguiente
-- [ ] `pipeline.py`: manejar que un módulo falle sin tumbar el análisis entero
 - [ ] Ajustar los pesos del scoring con los resultados del dataset de JuanFran
-- [ ] Revisar los PR de los cuatro y mergear
-- [ ] Prueba end-to-end: correo con QR → informe final
+- [ ] Revisar los PR de los cuatro y mergear (PR #1 de Andrés: 4 apaños pedidos)
+- [ ] Prueba end-to-end: correo con QR → informe final ← *bloqueada hasta que
+      estén `analisis_url` (Alex) e `informe` (JuanFran)*
 - [ ] Guion y ensayo de la demo
 
 ---
 
-## Lo siguiente: Docker
+## El sandbox en Docker
 
-Hoy el aislamiento es **a nivel de navegador**: perfil desechable, sin
+Antes el aislamiento era **a nivel de navegador**: perfil desechable, sin
 descargas, solo http/https. Eso cubre el robo de sesión, pero **no un exploit
 del propio Chromium** — si la web maliciosa revienta el navegador, está en la
-máquina.
+máquina. Es justo el punto que los profesores van a mirar en la memoria:
+"detonar en un entorno aislado" no es lo mismo que "abrirlo en mi portátil con
+menos cookies".
 
-Es un punto que los profesores van a mirar en la memoria: "detonar en un entorno
-aislado" no es lo mismo que "abrirlo en mi portátil con menos cookies".
+Ahora hay dos motores y el resultado dice cuál se ha usado:
 
-`sandbox.py` está escrito para que meterlo en un contenedor sea **envolver, no
-reescribir** — ver la nota `PENDIENTE` en la cabecera del archivo. El plan:
-imagen basada en `mcr.microsoft.com/playwright/python`, contenedor sin red hacia
-la LAN, usuario sin privilegios, y `detonar()` pasa a hablar con el contenedor
-en vez de lanzar Chromium en local.
+| | `"navegador"` (respaldo) | `"contenedor"` (por defecto) |
+|---|---|---|
+| Perfil desechable, sin cookies | ✅ | ✅ |
+| Aguanta un exploit de Chromium | ❌ | ✅ |
+| Límite de memoria y procesos | ❌ | ✅ 1 GB / 512 pids |
+| Sin privilegios ni capabilities | ❌ | ✅ |
+
+Cómo se lanza el contenedor (está en `detonar_en_docker()`):
+
+```
+--rm                              se destruye al terminar
+--user pwuser                     nada de root
+--cap-drop ALL                    sin capabilities
+--security-opt no-new-privileges  no puede escalar
+--memory 1g --pids-limit 512      ni bomba de memoria ni fork bomb
+```
+
+Como el contenedor sí tiene salida a internet (la necesita para detonar), se
+añadió un corte de **red interna**: antes de abrir nada se resuelve el host y
+si cae en `127.x`, `192.168.x`, `10.x`, `169.254.169.254`... se rechaza. Así un
+QR no nos puede usar de trampolín hacia la red de dentro. Escotilla para
+laboratorios propios: `QREAPER_PERMITIR_RED_PRIVADA=1`.
+
+**Construir la imagen** (una vez, tarda porque baja ~2 GB):
+
+```
+python -m qreaper.sandbox --construir-imagen
+```
+
+**Probar a mano:**
+
+```
+python -m qreaper.sandbox https://b-dev.es
+python -m qreaper.sandbox https://b-dev.es --motor local
+```
+
+Si no tienes Docker no pasa nada: baja a Chromium local solo y los tests de
+contenedor se saltan.
 
 ---
 

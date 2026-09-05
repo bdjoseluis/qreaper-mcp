@@ -1,0 +1,8 @@
+slug,marca,asunto,cuerpo,url_maliciosa
+bbva-verificar-cuenta,BBVA,Verifique su cuenta antes de 24h,"Estimado cliente,
+Hemos detectado accesos sospechosos.
+Escanee el QR para verificar su identidad.",http://bbva-verify.tk/login
+correos-paquete-retenido,Correos,Paquete retenido - pago pendiente 1.99EUR,"Su paquete esta retenido en aduana.
+Pague la tasa escaneando el QR.",http://correos-pago.duckdns.org/
+dgt-multa-pendiente,DGT,Notificacion de multa 84.50 EUR,"Tiene una multa pendiente por exceso de velocidad.
+Consulte y pague por QR.",http://dgt-multas-online.tk/consulta
