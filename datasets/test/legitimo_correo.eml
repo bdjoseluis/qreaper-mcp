@@ -1,0 +1,31 @@
+Content-Type: multipart/mixed; boundary="===============8150649093961854145=="
+MIME-Version: 1.0
+Subject: Bienvenido a nuestro servicio
+From: noreply@b-dev.es
+To: victima@ejemplo.com
+
+--===============8150649093961854145==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+
+Por favor revisa el documento adjunto.
+--===============8150649093961854145==
+Content-Type: image/png
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="bienvenida.png"
+
+iVBORw0KGgoAAAANSUhEUgAAAUoAAAFKAQAAAABTUiuoAAACI0lEQVR4nO1bQWrsMAx9UgJdZqAH
++EdJbtAr20fpDeJlIUEfyc50Wvjgv2gjJnqL4Ji3ELKlPEkzJOhE5l4mEFQOZyGuSzc4qAhndYOD
+CgU1jAAKkT1o0YdhCWe5ui6zKFaAlkmE6Dao+hhsV5zZ2gN+bmq5h1AhkjRtdbvF2y8Y0AHuIV2L
+mjWs5nWnswz4NxhXp47f3gXYSTQJAuU3DOCg4r+dNYlIslV5EcuJ9hCRlhMRfoWXm5VN+93aGQHF
+Ym6vkjBOy1cmlMct+2RZOhRftnJQoXiIqPxHJfu0NTmoQRfO8nJdUEsqLbVMt4usg7TVUWpVRjrd
+Vg4qFPbJqgKDbpoJy3jsaZRFL8Obgh82mu1TVW4gTCsIZdwkvw1CTmzloMIwywZJnw0NlRpWIs9r
+OMtdbGWNnzlt+jpohbVbEtTXfRQntvLlqahiYlZtYQLDyuEaauYc7RhazzeFs9jRdaFl+qhjk3pQ
+mgQllZfowXvsE0omm5Pslg6rtqB5fT2KZD7bVr48FfIV1jG007L81wZfkQl9zo5F1p1aL7c2C++d
+DvZhaxf4GrNjtBJZV3UkeZ90sRNbe8DPTS1HqZX1oOZ3otYiDJXheBqJKivKsCEvVnl9RGx5pu5E
+S62yNi2bQ8H7i61JhaCO9vPSmoUV2jv8UQM4qOiHPPwG7dDtkmxVZyeHjE/hVz77ZlH8awEnHwEH
+FeGsbnBQEc7qxpM66y+HyAiHS3NOTgAAAABJRU5ErkJggg==
+
+--===============8150649093961854145==--
