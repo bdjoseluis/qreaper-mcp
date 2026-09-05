@@ -387,8 +387,8 @@ def detonar_en_docker(url: str, *, timeout_ms: int = TIMEOUT_MS, captura: bool =
         orden.append("--sin-captura")
 
     # Margen generoso por encima del timeout de página: arrancar el contenedor
-    # y Chromium también cuesta.
-    limite = timeout_ms / 1000 + 60
+    # y Chromium también cuesta (en Windows la primera vez puede irse a 90s).
+    limite = timeout_ms / 1000 + 120
 
     try:
         proceso = _docker(*orden, timeout=limite)

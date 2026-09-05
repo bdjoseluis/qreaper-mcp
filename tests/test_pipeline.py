@@ -31,18 +31,30 @@ def sin_red(monkeypatch):
 
 
 # ── El pipeline aguanta con módulos a medio hacer ───────────────────
+def _sin_analisis_url(monkeypatch):
+    """Fuerza que analisis_url siga lanzando NotImplementedError (simula módulo a medias)."""
+    from qreaper import analisis_url
+
+    def no_implementado(url):
+        raise NotImplementedError("simulado: módulo sin acabar")
+
+    monkeypatch.setattr(analisis_url, "analizar_url", no_implementado)
+
+
 def test_pipeline_no_revienta_con_modulos_sin_implementar(tmp_path, monkeypatch):
     """analisis_url lanza NotImplementedError: no debe propagarse."""
+    _sin_analisis_url(monkeypatch)
     monkeypatch.chdir(tmp_path)  # que el informe no se escriba en el repo
     res = pipeline.analizar_url_suelta("https://correos-es.top/pago", formato_informe="json")
 
     assert isinstance(res, dict)
     assert res["url"] == "https://correos-es.top/pago"
-    assert "analisis_url" in res["errores"], "el fallo de Alex tiene que quedar apuntado"
+    assert "analisis_url" in res["errores"], "el fallo simulado tiene que quedar apuntado"
 
 
 def test_pipeline_genera_el_informe_aunque_falten_modulos(tmp_path, monkeypatch):
     """Con analisis_url a medias, el informe tiene que salir igual y avisar."""
+    _sin_analisis_url(monkeypatch)
     monkeypatch.chdir(tmp_path)
     res = pipeline.analizar_url_suelta("https://correos-es.top/pago", formato_informe="json")
 

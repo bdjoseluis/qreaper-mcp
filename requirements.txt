@@ -3,6 +3,8 @@ pyzbar
 opencv-python
 pillow
 pdf2image
+# Fallback para PDF sin poppler (Windows): decode.py lo usa si pdf2image falla.
+PyMuPDF
 # --- Módulo 2: análisis URL ---
 python-whois
 tldextract
