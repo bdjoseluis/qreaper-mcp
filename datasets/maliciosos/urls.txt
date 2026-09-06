@@ -1,0 +1,19 @@
+# URLs de quishing (reales anonimizadas o recreadas) para el banco de pruebas.
+# NO ABRIR: son solo cadenas de texto para el analisis estatico.
+https://correos-es.top/pago
+https://correos.es.pago-pendiente.top/tasa-aduana
+https://c0rre0s.com/envio/reprogramar
+https://correros.es/seguimiento
+https://bbva-seguridad.click/verificar-cuenta
+https://dgt-multas.xyz/sancion/pagar
+https://sede-aeat.info/devolucion/iban
+http://185.243.115.22/correos/pago.php
+https://actualiza-seur.click/app/seguimiento.apk
+https://correos.es@dominio-malo.top/pago
+https://xn--crreos-wxa.es/aviso
+telegram://resolve?domain=soporte_bbva_es
+intent://pago#Intent;scheme=http;package=com.fake.bank;end
+https://netflix-facturacion.sbs/cuenta/suspendida
+https://www.google.com/url?q=https://correos-pago.top/x
+https://seguridad-santander.cfd/login
+https://endesa-factura.buzz/impago

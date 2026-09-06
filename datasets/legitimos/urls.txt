@@ -1,0 +1,12 @@
+# URLs legitimas para el banco de pruebas del modulo 2.
+# Una por linea; las lineas con # son comentarios.
+https://www.correos.es/es/es/particulares
+https://www.bbva.es/personas.html
+https://sede.agenciatributaria.gob.es/Sede/inicio.html
+https://www.amazon.es/gp/css/order-history
+https://s3.eu-west-1.amazonaws.com/facturas/2026-01.pdf
+https://www.iberdrola.es/clientes
+https://www.seur.com/es/seguimiento-envios.html
+https://www.movistar.es/particulares/mi-movistar
+https://github.com/anthropics
+https://www.renfe.com/es/es
