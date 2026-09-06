@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import logging
 
-from . import analisis_url, decode, informe, sandbox, scoring
+from . import analisis_url, db, decode, informe, sandbox, scoring
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +51,8 @@ def _resguardo(nombre: str, funcion, respaldo, errores: dict):
     return respaldo
 
 
-def analizar_url_suelta(url: str, formato_informe: str | None = "pdf") -> dict:
+def analizar_url_suelta(url: str, formato_informe: str | None = "pdf",
+                        archivo: str | None = None) -> dict:
     """Analiza UNA url ya extraída: señales → detonación → nota → informe.
 
     Útil para probar la cadena sin tener que fabricar un QR, y es lo que usa
@@ -102,6 +103,7 @@ def analizar_url_suelta(url: str, formato_informe: str | None = "pdf") -> dict:
         "scoring": veredicto,
         "informe": None,
         "errores": errores,
+        "archivo": archivo,
     }
 
     if formato_informe:
@@ -111,6 +113,11 @@ def analizar_url_suelta(url: str, formato_informe: str | None = "pdf") -> dict:
             None,
             errores,
         )
+
+    # Registro en la base de datos. Va por _resguardo a propósito: que no se
+    # pueda escribir en la BD (disco lleno, permisos) no debe invalidar un
+    # análisis que ya está hecho — se apunta en `errores` y se sigue.
+    _resguardo("db", lambda: db.guardar(resultado), None, errores)
 
     return resultado
 
@@ -138,4 +145,5 @@ def analizar_archivo(ruta_archivo: str, formato_informe: str | None = "pdf") -> 
         log.info("No se han encontrado códigos QR con URL en %s", ruta_archivo)
         return []
 
-    return [analizar_url_suelta(url, formato_informe) for url in urls]
+    return [analizar_url_suelta(url, formato_informe, archivo=ruta_archivo)
+            for url in urls]

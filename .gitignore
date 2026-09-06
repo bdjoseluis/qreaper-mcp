@@ -37,3 +37,7 @@ datasets/tmp/
 # capturas del sandbox generadas al ejecutar los tests/demo
 demo/informes/datasets/
 **/datasets/tmp/
+
+# base de datos generada al ejecutar
+qreaper.db
+*.db
