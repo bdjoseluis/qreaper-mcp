@@ -1,3 +1,11 @@
+# Configuracion del proyecto QReaper.
+#
+# Sirve para dos cosas:
+#   1) que `qreaper` sea importable siempre (layout src/), se lance pytest
+#      desde donde se lance: raiz del repo, tests/ o el panel de VS Code.
+#   2) declarar las dependencias por modulo, para que cada uno instale solo
+#      lo suyo sin arrastrar opencv/playwright si no los necesita.
+
 [build-system]
 requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
@@ -5,11 +13,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "qreaper"
 version = "0.1.0"
-description = "Analizador anti-quishing: detecta phishing escondido en códigos QR"
-requires-python = ">=3.10"
-# Las dependencias de cada módulo están en requirements.txt (se instalan aparte,
-# así nadie tiene que instalar librerías de módulos que no toca).
+description = "Analizador anti-quishing: QR -> URL -> analisis -> informe"
+readme = "README.md"
+requires-python = ">=3.11"
+
+# Comun a todo el paquete: cli.py importa click al cargarse, asi que sin el
+# `import qreaper.cli` (y el smoke test) fallan.
 dependencies = ["click"]
+
+# Cada modulo, sus dependencias:  pip install -e ".[url]"
+[project.optional-dependencies]
+decode = ["pyzbar", "opencv-python", "pillow", "pdf2image"]   # modulo 1
+url = ["python-whois", "tldextract", "requests"]              # modulo 2
+sandbox = ["playwright"]                                      # modulo 3
+informe = ["reportlab", "jinja2"]                             # modulo 5
+dev = ["pytest"]
+todo = ["qreaper[decode,url,sandbox,informe,dev]"]
 
 [project.scripts]
 qreaper = "qreaper.cli:cli"
@@ -18,6 +37,8 @@ qreaper = "qreaper.cli:cli"
 where = ["src"]
 
 [tool.pytest.ini_options]
-# Gracias a esto, `pytest` funciona sin instalar nada del proyecto.
+# Este bloque fija la raiz del repo como rootdir aunque se lance pytest
+# desde tests/, y mete src/ en sys.path: eso es lo que arregla el
+# ModuleNotFoundError: No module named 'qreaper'.
 pythonpath = ["src"]
 testpaths = ["tests"]

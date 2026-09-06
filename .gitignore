@@ -33,3 +33,7 @@ demo/informes/*.json
 
 # capturas de pantalla de las detonaciones
 datasets/tmp/
+
+# capturas del sandbox generadas al ejecutar los tests/demo
+demo/informes/datasets/
+**/datasets/tmp/
