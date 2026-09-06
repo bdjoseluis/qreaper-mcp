@@ -84,7 +84,7 @@ proyecto ordenado.
 - [ ] Web simple: subir imagen o correo → ver el resultado
 
 ### Sprint 3 — Memoria (2–5 sep)
-- [ ] Escribir tu parte: arquitectura y decisiones técnicas
+- [x] Escribir tu parte: arquitectura y decisiones técnicas → [`ISMAEL-MEMORIA.md`](ISMAEL-MEMORIA.md)
 
 ---
 
