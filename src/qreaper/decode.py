@@ -299,19 +299,22 @@ def _procesar_eml(ruta: str) -> list[str]:
                 log.debug("Error procesando adjunto del email: %s", e)
                 continue
         elif content_type == "application/pdf":
+            payload = parte.get_payload(decode=True)
+            if not payload:
+                continue
+            tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
             try:
-                payload = parte.get_payload(decode=True)
-                if payload:
-                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                        tmp.write(payload)
-                        tmp.flush()
-                    try:
-                        textos.extend(_procesar_pdf(tmp.name))
-                    finally:
-                        os.unlink(tmp.name)
+                tmp.write(payload)
+                tmp.flush()
+                tmp.close()
+                textos.extend(_procesar_pdf(tmp.name))
             except Exception as e:
                 log.debug("Error procesando PDF adjunto del email: %s", e)
-                continue
+            finally:
+                try:
+                    os.unlink(tmp.name)
+                except OSError:
+                    pass
 
     return textos
 
