@@ -307,3 +307,34 @@ def test_decode_pdf_legitimo():
     urls = decode(str(DATASETS_TEST / "legitimo_documento.pdf"))
     assert len(urls) > 0, "No se encontraron URLs en el PDF legítimo"
     assert any("google.com" in u for u in urls), f"Se esperaba 'google.com' en {urls}"
+
+
+# ── 17. Temp files cleanup ────────────────────────────────────────
+def test_decode_eml_limpia_temporales(tmp_path):
+    """Los archivos temporales generados al procesar PDFs en .eml deben limpiarse."""
+    from email.message import EmailMessage
+
+    # Crear un .eml con un PDF adjunto (payload arbitrario — no necesita ser PDF real)
+    eml = EmailMessage()
+    eml["Subject"] = "test"
+    eml["From"] = "test@test.com"
+    eml["To"] = "dst@test.com"
+    eml.add_attachment(b"fake-pdf-content", maintype="application", subtype="pdf")
+
+    ruta_eml = tmp_path / "test.eml"
+    ruta_eml.write_bytes(eml.as_bytes())
+
+    import tempfile
+    temp_dir = Path(tempfile.gettempdir())
+
+    # Limpiar huérfanos de tests anteriores
+    for f in temp_dir.glob("tmp*.pdf"):
+        try:
+            f.unlink()
+        except OSError:
+            pass
+
+    decode(str(ruta_eml))
+
+    nuevos = list(temp_dir.glob("tmp*.pdf"))
+    assert not nuevos, f"Archivos temporales no limpiados: {nuevos}"

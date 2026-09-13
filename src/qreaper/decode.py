@@ -268,8 +268,8 @@ def _procesar_pdf(ruta: str) -> list[str]:
                 img_bgr = img
             textos.extend(_decodificar_qr_de_imagen(img_bgr))
         doc.close()
-    except Exception as e:
-        log.error("Error procesando PDF %s: %s", ruta, e)
+    except Exception:
+        log.error("Error procesando PDF %s", ruta)
 
     return textos
 
@@ -311,10 +311,14 @@ def _procesar_eml(ruta: str) -> list[str]:
             except Exception as e:
                 log.debug("Error procesando PDF adjunto del email: %s", e)
             finally:
+                # En Windows, fitz puede mantener el handle abierto aunque
+                # falle. Renombrar primero rompe el lock del archivo.
                 try:
-                    os.unlink(tmp.name)
+                    staging = tmp.name + ".del"
+                    os.rename(tmp.name, staging)
+                    os.unlink(staging)
                 except OSError:
-                    pass
+                    log.debug("No se pudo eliminar temporal %s", tmp.name)
 
     return textos
 
