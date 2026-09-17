@@ -48,6 +48,11 @@ _DOMINIO_RE = re.compile(
 MAX_PAGINAS_PDF = 50
 PDF_DPI = 300
 
+#: Máximo de píxeles por lado en imágenes. Una imagen de 100,000 × 100,000 px
+#: reservaría ~40 GB de RAM solo para OpenCV. Con 10,000 px es más que suficiente
+#: para decodificar cualquier QR (un QR típico tiene ~400 px de lado).
+MAX_IMAGE_DIMENSION = 10_000
+
 
 def _es_url(texto: str) -> bool:
     """Devuelve True si el texto parece una URL."""
@@ -211,6 +216,27 @@ def _decodificar_qr_de_imagen(img: np.ndarray) -> list[str]:
     return textos
 
 
+def _redimensionar_si_necesario(img: np.ndarray) -> np.ndarray:
+    """Redimensiona la imagen si excede MAX_IMAGE_DIMENSION por lado.
+
+    En vez de rechazar la imagen (que rompería la UX), la escala hacia abajo
+    manteniendo la proporción. Un QR típico tiene ~400 px, así que incluso
+    con 10,000 px de tope se decodifica sin problemas cualquier QR real.
+    """
+    h, w = img.shape[:2]
+    if h <= MAX_IMAGE_DIMENSION and w <= MAX_IMAGE_DIMENSION:
+        return img
+
+    factor = MAX_IMAGE_DIMENSION / max(h, w)
+    nuevo_ancho = int(w * factor)
+    nuevo_alto = int(h * factor)
+    log.warning(
+        "Imagen demasiado grande (%d×%d). Redimensionando a %d×%d.",
+        w, h, nuevo_ancho, nuevo_alto,
+    )
+    return cv2.resize(img, (nuevo_ancho, nuevo_alto), interpolation=cv2.INTER_AREA)
+
+
 def _procesar_imagen(ruta: str) -> list[str]:
     """Procesa un archivo de imagen, decodificando todos los QR encontrados."""
     textos: list[str] = []
@@ -225,6 +251,9 @@ def _procesar_imagen(ruta: str) -> list[str]:
         except Exception as e:
             log.error("No se pudo leer la imagen %s: %s", ruta, e)
             return []
+
+    # Validar dimensiones y redimensionar si es necesario
+    img = _redimensionar_si_necesario(img)
 
     # Decodificar QR de la imagen original
     textos.extend(_decodificar_qr_de_imagen(img))
@@ -246,6 +275,7 @@ def _procesar_pdf(ruta: str) -> list[str]:
         imagenes = convert_from_path(ruta, dpi=PDF_DPI, first_page=1, last_page=MAX_PAGINAS_PDF)
         for imagen_pil in imagenes:
             img_array = cv2.cvtColor(np.array(imagen_pil.convert("RGB")), cv2.COLOR_RGB2BGR)
+            img_array = _redimensionar_si_necesario(img_array)
             textos.extend(_decodificar_qr_de_imagen(img_array))
         return textos
     except Exception as e:
@@ -266,6 +296,7 @@ def _procesar_pdf(ruta: str) -> list[str]:
                 img_bgr = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             else:
                 img_bgr = img
+            img_bgr = _redimensionar_si_necesario(img_bgr)
             textos.extend(_decodificar_qr_de_imagen(img_bgr))
         doc.close()
     except Exception:
