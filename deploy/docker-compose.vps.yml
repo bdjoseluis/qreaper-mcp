@@ -22,10 +22,11 @@ services:
       dockerfile: deploy/Dockerfile
     restart: unless-stopped
     environment:
-      QREAPER_SANDBOX: "off"
+      QREAPER_SANDBOX: "local"
+      QREAPER_EN_CONTENEDOR: "1"
     volumes:
       - qreaper-data:/data
-    mem_limit: 400m
+    mem_limit: 1g
     logging:
       driver: json-file
       options: { max-size: "10m", max-file: "3" }
