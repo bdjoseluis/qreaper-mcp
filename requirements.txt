@@ -16,6 +16,11 @@ playwright
 # estándar a propósito: un informe no puede depender de más cosas que puedan
 # fallar al instalar.
 reportlab
+# --- Capa API REST + MCP (Jose) ---
+fastapi
+uvicorn[standard]
+python-multipart
+mcp>=2
 # --- Módulo 6 / general ---
 click
 # --- generacion de fixtures (scripts/generar_fixtures_qr.py) ---
