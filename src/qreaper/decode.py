@@ -28,15 +28,21 @@ PDF_EXT = ".pdf"
 EML_EXT = ".eml"
 
 _URL_RE = re.compile(
-    r"^https?://"
-    r"(?:[a-zA-Z0-9._~!$&'()*+,;=:@-]*@)?"  # userinfo opcional
-    r"(?:"                                     # host (alternativas):
-        r"(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}"  # dominio
-        r"|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"  # IPv4
-        r"|[a-zA-Z0-9-]+"                         # hostname simple (localhost, etc.)
-    r")"
-    r"(?::\d{1,5})?"                       # puerto opcional
-    r"(?:/[^\s]*)?$"                       # path opcional
+    r"^[a-zA-Z][a-zA-Z0-9+.\-]*://"  # esquema con ://
+    r"[^\s]+"                          # contenido sin whitespace
+    r"(?<!\.)"                         # no termina en punto (URL incompleta)
+    r"$"
+)
+
+_MAILTO_TEL_RE = re.compile(
+    r"^[a-zA-Z][a-zA-Z0-9+.\-]*:(?!//)[^\s]+"  # esquema con : pero sin // (mailto:, tel:, WIFI:)
+)
+
+_DOMINIO_RE = re.compile(
+    r"^[a-zA-Z0-9][a-zA-Z0-9.-]*"    # label con puntos y guiones
+    r"\.[a-zA-Z]{2,4}"               # .TLD (2-4 letras, como los TLDs mas comunes)
+    r"(:\d{1,5})?"                   # puerto opcional
+    r"(?:/[^\s]*)?$"                 # path opcional
 )
 
 MAX_PAGINAS_PDF = 50
@@ -46,18 +52,91 @@ PDF_DPI = 300
 def _es_url(texto: str) -> bool:
     """Devuelve True si el texto parece una URL."""
     texto = texto.strip()
-    return _URL_RE.fullmatch(texto) is not None
+    return _URL_RE.fullmatch(texto) is not None or _MAILTO_TEL_RE.fullmatch(texto) is not None
+
+
+def _normalizar_url(texto: str) -> str | None:
+    """Si el texto parece una URL sin esquema, le agrega https://.
+
+    Devuelve la URL normalizada o None si no parece URL.
+    """
+    if _es_url(texto):
+        return texto
+    if _DOMINIO_RE.fullmatch(texto):
+        return "https://" + texto
+    return None
+
+
+def _intentar_concatenar(fragmentos: list[str]) -> str | None:
+    """Intenta concatenar fragmentos y verificar si forman una URL valida.
+
+    Los QR partidos (structured append) vienen en fragmentos consecutivos.
+    Esta funcion prueba a unirlos directamente (sin separador) y ver si el
+    resultado es una URL.
+    """
+    if not fragmentos or len(fragmentos) < 2:
+        return None
+
+    # Concatenacion directa (como viene del structured append)
+    candidata = "".join(fragmentos)
+    return _normalizar_url(candidata)
 
 
 def _extraer_urls(datos_qr: list[str]) -> list[str]:
-    """Filtra solo las cadenas que son URLs y elimina duplicados."""
+    """Filtra solo las cadenas que son URLs, normaliza y elimina duplicados.
+
+    Tambien intenta reconstruir URLs fragmentadas (QR partidos/structured append).
+    """
     urls: list[str] = []
     vistos: set[str] = set()
+    fragmentos_pendientes: list[str] = []
+
     for dato in datos_qr:
         texto = dato.strip()
-        if _es_url(texto) and texto not in vistos:
-            urls.append(texto)
-            vistos.add(texto)
+        if not texto:
+            continue
+
+        normalizada = _normalizar_url(texto)
+        if normalizada is not None:
+            # Antes de agregar la URL actual, intentar concatenar fragmentos pendientes
+            if fragmentos_pendientes:
+                concatenada = _intentar_concatenar(fragmentos_pendientes)
+                if concatenada and concatenada not in vistos:
+                    urls.append(concatenada)
+                    vistos.add(concatenada)
+                    log.debug(
+                        "Fragmentos concatenados exitosamente: %s -> %s",
+                        fragmentos_pendientes, concatenada,
+                    )
+                else:
+                    log.debug(
+                        "Descartando fragmentos no-URL no concatenables: %s",
+                        fragmentos_pendientes,
+                    )
+                fragmentos_pendientes.clear()
+
+            if normalizada not in vistos:
+                urls.append(normalizada)
+                vistos.add(normalizada)
+        else:
+            fragmentos_pendientes.append(texto)
+
+    # Al final, intentar concatenar los fragmentos pendientes restantes
+    if fragmentos_pendientes:
+        concatenada = _intentar_concatenar(fragmentos_pendientes)
+        if concatenada and concatenada not in vistos:
+            urls.append(concatenada)
+            vistos.add(concatenada)
+            log.debug(
+                "Fragmentos finales concatenados: %s -> %s",
+                fragmentos_pendientes, concatenada,
+            )
+        else:
+            log.debug(
+                "Descartando fragmentos finales no concatenables: %s",
+                fragmentos_pendientes,
+            )
+
     return urls
 
 
@@ -189,8 +268,8 @@ def _procesar_pdf(ruta: str) -> list[str]:
                 img_bgr = img
             textos.extend(_decodificar_qr_de_imagen(img_bgr))
         doc.close()
-    except Exception as e:
-        log.error("Error procesando PDF %s: %s", ruta, e)
+    except Exception:
+        log.error("Error procesando PDF %s", ruta)
 
     return textos
 
@@ -220,19 +299,26 @@ def _procesar_eml(ruta: str) -> list[str]:
                 log.debug("Error procesando adjunto del email: %s", e)
                 continue
         elif content_type == "application/pdf":
+            payload = parte.get_payload(decode=True)
+            if not payload:
+                continue
+            tmp = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False)
             try:
-                payload = parte.get_payload(decode=True)
-                if payload:
-                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                        tmp.write(payload)
-                        tmp.flush()
-                    try:
-                        textos.extend(_procesar_pdf(tmp.name))
-                    finally:
-                        os.unlink(tmp.name)
+                tmp.write(payload)
+                tmp.flush()
+                tmp.close()
+                textos.extend(_procesar_pdf(tmp.name))
             except Exception as e:
                 log.debug("Error procesando PDF adjunto del email: %s", e)
-                continue
+            finally:
+                # En Windows, fitz puede mantener el handle abierto aunque
+                # falle. Renombrar primero rompe el lock del archivo.
+                try:
+                    staging = tmp.name + ".del"
+                    os.rename(tmp.name, staging)
+                    os.unlink(staging)
+                except OSError:
+                    log.debug("No se pudo eliminar temporal %s", tmp.name)
 
     return textos
 

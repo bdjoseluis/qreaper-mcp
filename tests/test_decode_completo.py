@@ -167,6 +167,109 @@ def test_es_url_rechaza_texto_no_url():
     assert not _es_url("")
 
 
+# ── 14b. Esquemas no-http (deep links) ─────────────────────────────
+def test_es_url_acepta_telegram():
+    """URLs con esquema telegram:// deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("telegram://resolve?domain=soporte_bbva_es")
+
+
+def test_es_url_acepta_intent():
+    """URLs con esquema intent:// deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("intent://scan/#Intent;scheme=zxing;package=com.google.zxing.client.android;end")
+
+
+def test_es_url_acepta_mailto():
+    """URLs con esquema mailto: deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("mailto:user@example.com")
+
+
+def test_es_url_acepta_upi():
+    """URLs con esquema upi:// deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("upi://pay?pa=merchant@upi")
+
+
+def test_es_url_acepta_wifi():
+    """URLs con esquema WIFI: deben ser aceptadas."""
+    from qreaper.decode import _es_url
+    assert _es_url("WIFI:T:WPA;S:MiRed;P:clave123;;")
+
+
+# ── 14c. Normalizacion de URLs sin esquema ──────────────────────────
+def test_extraer_urls_normaliza_dominio():
+    """Dominios sin esquema deben normalizarse a https://."""
+    from qreaper.decode import _extraer_urls
+    urls = _extraer_urls(["correos-es.top/pago"])
+    assert urls == ["https://correos-es.top/pago"]
+
+
+def test_extraer_urls_acepta_http():
+    """URLs con http:// se mantienen sin cambios."""
+    from qreaper.decode import _extraer_urls
+    urls = _extraer_urls(["http://correos-es.top/pago"])
+    assert urls == ["http://correos-es.top/pago"]
+
+
+def test_extraer_urls_acepta_telegram():
+    """URLs con esquema telegram:// pasan sin normalizar."""
+    from qreaper.decode import _extraer_urls
+    urls = _extraer_urls(["telegram://resolve?domain=soporte_bbva_es"])
+    assert urls == ["telegram://resolve?domain=soporte_bbva_es"]
+
+
+# ── 14d. Fragmentos descartados (QR partidos) ──────────────────────
+def test_extraer_urls_descarta_fragmentos_no_url():
+    """Fragmentos que no son URL ni dominio se descartan con log."""
+    from qreaper.decode import _extraer_urls
+    urls = _extraer_urls(["hola mundo", "texto random"])
+    assert urls == []
+
+
+def test_extraer_urls_no_duplica():
+    """No debe haber URLs duplicadas en la salida."""
+    from qreaper.decode import _extraer_urls
+    urls = _extraer_urls(["https://example.com", "https://example.com", "example.com"])
+    assert urls == ["https://example.com"]
+
+
+# ── 14e. QR partidos (structured append) ──────────────────────────
+def test_extraer_urls_concatena_fragmentos():
+    """Fragmentos que forman una URL al concatenarse deben unirse."""
+    from qreaper.decode import _extraer_urls
+    # QR partido: "https://bit.ly/xyz" viene como ["https://bit.", "ly/xyz"]
+    urls = _extraer_urls(["https://bit.", "ly/xyz"])
+    assert urls == ["https://bit.ly/xyz"]
+
+
+def test_extraer_urls_concatena_fragmentos_sin_esquema():
+    """Fragmentos sin esquema que forman un dominio al concatenarse."""
+    from qreaper.decode import _extraer_urls
+    # QR partido: "correos-es.top/pago" viene como ["correos-es.", "top/pago"]
+    urls = _extraer_urls(["correos-es.", "top/pago"])
+    assert urls == ["https://correos-es.top/pago"]
+
+
+def test_extraer_urls_no_concatenafragmentos_invalidos():
+    """Fragmentos que no forman URL al concatenarse se descartan."""
+    from qreaper.decode import _extraer_urls
+    # Fragmentos sin puntos ni esquema: no pueden formar URL
+    urls = _extraer_urls(["12345", "abcdef", "xyz"])
+    assert urls == []
+
+
+def test_extraer_urls_mezcla_urls_y_fragmentos():
+    """Mezcla de URLs completas y fragmentos de otro QR partido."""
+    from qreaper.decode import _extraer_urls
+    # URL completa + fragmentos de otro QR partido
+    urls = _extraer_urls(["https://example.com", "https://bit.", "ly/xyz"])
+    assert "https://example.com" in urls
+    assert "https://bit.ly/xyz" in urls
+    assert len(urls) == 2
+
+
 # ── 15. Soporte para emails .eml ──────────────────────────────────
 DATASETS_TEST = RAIZ / "datasets" / "test"
 
@@ -204,3 +307,34 @@ def test_decode_pdf_legitimo():
     urls = decode(str(DATASETS_TEST / "legitimo_documento.pdf"))
     assert len(urls) > 0, "No se encontraron URLs en el PDF legítimo"
     assert any("google.com" in u for u in urls), f"Se esperaba 'google.com' en {urls}"
+
+
+# ── 17. Temp files cleanup ────────────────────────────────────────
+def test_decode_eml_limpia_temporales(tmp_path):
+    """Los archivos temporales generados al procesar PDFs en .eml deben limpiarse."""
+    from email.message import EmailMessage
+
+    # Crear un .eml con un PDF adjunto (payload arbitrario — no necesita ser PDF real)
+    eml = EmailMessage()
+    eml["Subject"] = "test"
+    eml["From"] = "test@test.com"
+    eml["To"] = "dst@test.com"
+    eml.add_attachment(b"fake-pdf-content", maintype="application", subtype="pdf")
+
+    ruta_eml = tmp_path / "test.eml"
+    ruta_eml.write_bytes(eml.as_bytes())
+
+    import tempfile
+    temp_dir = Path(tempfile.gettempdir())
+
+    # Limpiar huérfanos de tests anteriores
+    for f in temp_dir.glob("tmp*.pdf"):
+        try:
+            f.unlink()
+        except OSError:
+            pass
+
+    decode(str(ruta_eml))
+
+    nuevos = list(temp_dir.glob("tmp*.pdf"))
+    assert not nuevos, f"Archivos temporales no limpiados: {nuevos}"
