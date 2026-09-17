@@ -124,3 +124,48 @@ def test_web_app_sirve_html(cliente):
     assert r.status_code == 200
     assert "text/html" in r.headers["content-type"]
     assert "QReaper" in r.text
+
+
+# --- Validación de archivo subido (fixes de seguridad) ---------------------
+
+def test_archivo_extension_no_permitida_da_415(cliente):
+    r = cliente.post(
+        "/analizar/archivo",
+        files={"archivo": ("malware.exe", b"MZ\x90\x00payload", "application/octet-stream")},
+    )
+    assert r.status_code == 415
+
+
+def test_archivo_extension_php_disfrazada_da_415(cliente):
+    r = cliente.post(
+        "/analizar/archivo",
+        files={"archivo": ("shell.php", b"<?php system($_GET['c']); ?>", "text/plain")},
+    )
+    assert r.status_code == 415
+
+
+def test_archivo_demasiado_grande_da_413(cliente):
+    contenido_grande = b"\x89PNG" + b"A" * (11 * 1024 * 1024)  # 11 MB
+    r = cliente.post(
+        "/analizar/archivo",
+        files={"archivo": ("grande.png", contenido_grande, "image/png")},
+    )
+    assert r.status_code == 413
+
+
+def test_archivo_magic_bytes_incorrectos_da_422(cliente):
+    # Extensión .png pero contenido de PDF → mismatch
+    r = cliente.post(
+        "/analizar/archivo",
+        files={"archivo": ("trampa.png", b"%PDF-1.4 fake pdf content", "image/png")},
+    )
+    assert r.status_code == 422
+
+
+def test_archivo_extension_mayusculas_se_normaliza(cliente):
+    # .PNG en mayúsculas debe aceptarse igual que .png
+    r = cliente.post(
+        "/analizar/archivo",
+        files={"archivo": ("captura.PNG", b"\x89PNG\r\n\x1a\n fake png", "image/png")},
+    )
+    assert r.status_code == 200
