@@ -22,6 +22,37 @@ from pathlib import Path
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel, Field
 
+MAX_ARCHIVO_BYTES = 10 * 1024 * 1024  # 10 MB
+
+# Extensiones que acepta decode.py; nada más pasa al pipeline.
+_EXTENSIONES_PERMITIDAS = {
+    ".png", ".jpg", ".jpeg", ".bmp", ".gif", ".tiff", ".tif", ".pdf", ".eml",
+}
+
+# Primeros bytes esperados según extensión (magic bytes).
+_MAGIC: dict[str, bytes] = {
+    ".png":  b"\x89PNG",
+    ".jpg":  b"\xff\xd8\xff",
+    ".jpeg": b"\xff\xd8\xff",
+    ".bmp":  b"BM",
+    ".gif":  b"GIF8",
+    ".tiff": b"II",   # big-endian también empieza con MM; se comprueba aparte
+    ".tif":  b"II",
+    ".pdf":  b"%PDF",
+}
+
+
+def _valida_archivo(contenido: bytes, sufijo: str) -> None:
+    firma = _MAGIC.get(sufijo)
+    if not firma:
+        return  # .eml es texto plano, sin firma binaria fiable
+    es_tiff_be = sufijo in (".tiff", ".tif") and contenido.startswith(b"MM")
+    if not es_tiff_be and not contenido.startswith(firma):
+        raise HTTPException(
+            status_code=422,
+            detail=f"El contenido no coincide con la extensión '{sufijo}'.",
+        )
+
 from . import db, pipeline
 
 log = logging.getLogger("qreaper.api")
@@ -126,10 +157,19 @@ async def analizar_archivo(
 
     # Guardamos el subido en un temporal conservando la extensión: decode elige
     # el lector (imagen/pdf/eml) según ella.
-    sufijo = Path(archivo.filename or "").suffix or ".bin"
-    contenido = await archivo.read()
+    sufijo = Path(archivo.filename or "").suffix.lower() or ".bin"
+    if sufijo not in _EXTENSIONES_PERMITIDAS:
+        raise HTTPException(
+            status_code=415,
+            detail=f"Extensión '{sufijo}' no admitida. Usa: {', '.join(sorted(_EXTENSIONES_PERMITIDAS))}.",
+        )
+
+    contenido = await archivo.read(MAX_ARCHIVO_BYTES + 1)
+    if len(contenido) > MAX_ARCHIVO_BYTES:
+        raise HTTPException(status_code=413, detail="Archivo demasiado grande (máx 10 MB).")
     if not contenido:
         raise HTTPException(status_code=422, detail="El archivo está vacío.")
+    _valida_archivo(contenido, sufijo)
 
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=sufijo)
     try:
