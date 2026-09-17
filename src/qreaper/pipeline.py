@@ -12,10 +12,23 @@ completa desde hoy sin esperar a que estén los cinco módulos.
 from __future__ import annotations
 
 import logging
+import os
 
 from . import analisis_url, db, decode, informe, sandbox, scoring
 
 log = logging.getLogger(__name__)
+
+
+def _sandbox_activo() -> bool:
+    """El sandbox detona URLs reales; en despliegues compartidos se apaga.
+
+    Se controla con la variable de entorno ``QREAPER_SANDBOX``: cualquiera de
+    ``off``/``0``/``false``/``no`` la desactiva (el análisis sigue por señales
+    de URL + scoring). Por defecto está activo, como en local.
+    """
+    return os.getenv("QREAPER_SANDBOX", "on").strip().lower() not in {
+        "off", "0", "false", "no",
+    }
 
 #: Claves que promete ``analisis_url.analizar_url()`` en CONTRATOS.md.
 #: Si el módulo falla, rellenamos con None para que scoring no se entere.
@@ -82,12 +95,15 @@ def analizar_url_suelta(url: str, formato_informe: str | None = "pdf",
     else:
         senales = {**_senales_vacias(url), **senales}
 
-    detonacion = _resguardo(
-        "sandbox",
-        lambda: sandbox.detonar(url),
-        sandbox._resultado_vacio(url, "el sandbox no llegó a ejecutarse"),
-        errores,
-    )
+    if _sandbox_activo():
+        detonacion = _resguardo(
+            "sandbox",
+            lambda: sandbox.detonar(url),
+            sandbox._resultado_vacio(url, "el sandbox no llegó a ejecutarse"),
+            errores,
+        )
+    else:
+        detonacion = sandbox._resultado_vacio(url, "sandbox desactivado (QREAPER_SANDBOX=off)")
 
     veredicto = _resguardo(
         "scoring",

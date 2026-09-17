@@ -1,0 +1,12 @@
+.venv/
+.git/
+.pytest_cache/
+__pycache__/
+*.pyc
+datasets/
+demo/
+docker/
+tests/
+qreaper.db
+*.md
+!README.md
