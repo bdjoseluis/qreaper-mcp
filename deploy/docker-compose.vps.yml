@@ -9,6 +9,11 @@
 #   cd /opt/qreaper
 #   docker compose -f deploy/docker-compose.vps.yml up -d --build
 
+# Nombre de proyecto explícito: si no, Compose lo deriva del directorio
+# ("deploy") y colisiona con el stack de carsimport, que vive en otro
+# .../deploy/. Aislarlo evita que un `down` de uno afecte al otro.
+name: qreaper
+
 services:
 
   qreaper-web:
