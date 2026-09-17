@@ -117,3 +117,10 @@ def test_historial_por_id_ok(cliente):
 def test_historial_por_id_inexistente_da_404(cliente):
     r = cliente.get("/historial/999")
     assert r.status_code == 404
+
+
+def test_web_app_sirve_html(cliente):
+    r = cliente.get("/app")
+    assert r.status_code == 200
+    assert "text/html" in r.headers["content-type"]
+    assert "QReaper" in r.text

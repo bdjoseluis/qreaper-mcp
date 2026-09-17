@@ -73,6 +73,14 @@ def _valida_formato(formato: str | None) -> str | None:
 # Endpoints
 # ---------------------------------------------------------------------------
 
+@app.get("/app", tags=["meta"], include_in_schema=False)
+def web_app():
+    """Web mínima de respaldo (una sola página que consume esta misma API)."""
+    from . import web
+
+    return web.pagina_html()
+
+
 @app.get("/", tags=["meta"])
 def raiz() -> dict:
     """Información básica de la API y enlaces útiles."""
@@ -80,6 +88,7 @@ def raiz() -> dict:
         "servicio": "QReaper API",
         "version": VERSION,
         "docs": "/docs",
+        "web": "/app",
         "endpoints": [
             "POST /analizar/url",
             "POST /analizar/archivo",
