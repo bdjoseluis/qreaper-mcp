@@ -27,11 +27,15 @@ decode = ["pyzbar", "opencv-python", "pillow", "pdf2image"]   # modulo 1
 url = ["python-whois", "tldextract", "requests"]              # modulo 2
 sandbox = ["playwright"]                                      # modulo 3
 informe = ["reportlab", "jinja2"]                             # modulo 5
-dev = ["pytest"]
-todo = ["qreaper[decode,url,sandbox,informe,dev]"]
+api = ["fastapi", "uvicorn[standard]", "python-multipart"]    # capa HTTP (Jose)
+mcp = ["mcp>=2"]                                              # tool MCP (Jose)
+dev = ["pytest", "httpx"]
+todo = ["qreaper[decode,url,sandbox,informe,api,mcp,dev]"]
 
 [project.scripts]
 qreaper = "qreaper.cli:cli"
+qreaper-api = "qreaper.api:main"
+qreaper-mcp = "qreaper.mcp_server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
