@@ -97,7 +97,8 @@ PAGINA = """<!doctype html>
       <button class="btn-preset" onclick="preset('https://bbva-seguridad.click/verificar-cuenta')">BBVA seguridad</button>
       <button class="btn-preset" onclick="preset('https://dgt-multas.xyz/sancion/pagar')">DGT multa</button>
       <button class="btn-preset" onclick="preset('https://actualiza-seur.click/app/seguimiento.apk')">SEUR APK</button>
-      <button class="btn-preset btn-rick" onclick="preset('https://www.youtube.com/watch?v=dQw4w9WgXcQ')" title="Nunca te lo vas a esperar">Rickroll 🎵</button>
+      <button class="btn-preset btn-rick" onclick="presetRick('correos')" title="Escanea con el movil... si te atreves">Trampa Correos 🎵</button>
+      <button class="btn-preset btn-rick" onclick="presetRick('bbva')" title="Escanea con el movil... si te atreves">Trampa BBVA 🎵</button>
     </div>
     <div class="row">
       <input type="text" id="urlQr" placeholder="https://correos-es.top/pago" autocomplete="off">
@@ -172,6 +173,8 @@ async function cargarHist() {
 cargarHist();
 let _qrUrl='';
 function preset(url){document.getElementById('urlQr').value=url; generarQr();}
+const _rickRoutes={correos:'/correos/seguimiento-envio',bbva:'/bbva/verificar-cuenta',dgt:'/dgt/pago-multa'};
+function presetRick(tipo){preset(window.location.origin+_rickRoutes[tipo]);}
 async function generarQr(){
   const url=document.getElementById('urlQr').value.trim();
   const out=document.getElementById('resQr');

@@ -21,7 +21,7 @@ import tempfile
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
-from fastapi.responses import Response
+from fastapi.responses import RedirectResponse, Response
 from pydantic import BaseModel, Field
 
 MAX_ARCHIVO_BYTES = 10 * 1024 * 1024  # 10 MB
@@ -186,6 +186,16 @@ async def analizar_archivo(
         "urls_encontradas": len(resultados),
         "resultados": resultados,
     }
+
+
+_RICK = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+@app.get("/correos/seguimiento-envio", tags=["trampa"], include_in_schema=False)
+@app.get("/bbva/verificar-cuenta", tags=["trampa"], include_in_schema=False)
+@app.get("/dgt/pago-multa", tags=["trampa"], include_in_schema=False)
+def trampa_rick():
+    """Parece phishing. En realidad es un rickroll. El sandbox lo descubre."""
+    return RedirectResponse(url=_RICK, status_code=302)
 
 
 @app.get("/generar/qr", tags=["herramientas"])
