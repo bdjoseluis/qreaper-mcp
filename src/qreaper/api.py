@@ -15,6 +15,7 @@ Docs interactivas automáticas en  http://localhost:8000/docs
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 import tempfile
 from pathlib import Path
@@ -175,7 +176,7 @@ async def analizar_archivo(
     try:
         tmp.write(contenido)
         tmp.close()
-        resultados = pipeline.analizar_archivo(tmp.name, formato)
+        resultados = await asyncio.to_thread(pipeline.analizar_archivo, tmp.name, formato)
     finally:
         Path(tmp.name).unlink(missing_ok=True)
 
