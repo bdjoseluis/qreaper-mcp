@@ -59,6 +59,11 @@ PAGINA = """<!doctype html>
   th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; }
   td.url { word-break:break-all; max-width:360px; }
   .muted { color:var(--muted); font-size:13px; }
+  .btn-preset { background:#1c2733; color:var(--txt); border:1px solid var(--line);
+    font-size:12px; padding:6px 12px; border-radius:6px; }
+  .btn-preset:hover { border-color:var(--accent); color:var(--accent); }
+  .btn-rick { border-color:#ff5c5c44; color:var(--peligro); }
+  .btn-rick:hover { border-color:var(--peligro); background:rgba(255,92,92,.1); }
 </style>
 </head>
 <body>
@@ -86,6 +91,14 @@ PAGINA = """<!doctype html>
 
   <div class="card">
     <h2>Generar QR malicioso (demo)</h2>
+    <p class="muted" style="margin:0 0 10px;font-size:13px">Elige un preset o escribe tu propia URL. Los presets parecen phishing real pero los dominios no existen (inofensivos).</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+      <button class="btn-preset" onclick="preset('https://correos.es.pago-pendiente.top/multa')">Correos &amp; multa</button>
+      <button class="btn-preset" onclick="preset('https://bbva-seguridad.click/verificar-cuenta')">BBVA seguridad</button>
+      <button class="btn-preset" onclick="preset('https://dgt-multas.xyz/sancion/pagar')">DGT multa</button>
+      <button class="btn-preset" onclick="preset('https://actualiza-seur.click/app/seguimiento.apk')">SEUR APK</button>
+      <button class="btn-preset btn-rick" onclick="preset('https://www.youtube.com/watch?v=dQw4w9WgXcQ')" title="Nunca te lo vas a esperar">Rickroll 🎵</button>
+    </div>
     <div class="row">
       <input type="text" id="urlQr" placeholder="https://correos-es.top/pago" autocomplete="off">
       <button onclick="generarQr()">Generar QR</button>
@@ -158,6 +171,7 @@ async function cargarHist() {
 }
 cargarHist();
 let _qrUrl='';
+function preset(url){document.getElementById('urlQr').value=url; generarQr();}
 async function generarQr(){
   const url=document.getElementById('urlQr').value.trim();
   const out=document.getElementById('resQr');
