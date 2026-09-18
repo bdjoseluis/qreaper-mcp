@@ -21,6 +21,7 @@ import tempfile
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 MAX_ARCHIVO_BYTES = 10 * 1024 * 1024  # 10 MB
@@ -185,6 +186,23 @@ async def analizar_archivo(
         "urls_encontradas": len(resultados),
         "resultados": resultados,
     }
+
+
+@app.get("/generar/qr", tags=["herramientas"])
+def generar_qr(
+    url: str = Query(..., description="URL a codificar en el QR."),
+) -> Response:
+    """Genera un QR PNG con la URL dada. Útil para crear QRs de prueba/demo."""
+    try:
+        import io
+        import qrcode  # type: ignore[import]
+    except ImportError:
+        raise HTTPException(status_code=503, detail="qrcode no disponible en este entorno.")
+    if not url.strip():
+        raise HTTPException(status_code=422, detail="La URL no puede estar vacía.")
+    buf = io.BytesIO()
+    qrcode.make(url.strip()).save(buf, format="PNG")
+    return Response(content=buf.getvalue(), media_type="image/png")
 
 
 @app.get("/historial", tags=["historial"])

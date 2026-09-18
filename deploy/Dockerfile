@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir \
         fastapi "uvicorn[standard]" python-multipart "mcp>=2" \
         pyzbar opencv-python-headless pillow pdf2image PyMuPDF \
         python-whois tldextract requests reportlab jinja2 click \
-        playwright
+        playwright "qrcode[pil]"
 
 # Chromium headless para el sandbox de detonación.
 # --with-deps instala las librerías de sistema que necesita Chromium.

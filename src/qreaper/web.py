@@ -85,6 +85,15 @@ PAGINA = """<!doctype html>
   </div>
 
   <div class="card">
+    <h2>Generar QR malicioso (demo)</h2>
+    <div class="row">
+      <input type="text" id="urlQr" placeholder="https://correos-es.top/pago" autocomplete="off">
+      <button onclick="generarQr()">Generar QR</button>
+    </div>
+    <div id="resQr"></div>
+  </div>
+
+  <div class="card">
     <h2>Historial de análisis</h2>
     <div id="hist"><p class="muted">Cargando…</p></div>
   </div>
@@ -148,6 +157,29 @@ async function cargarHist() {
   }catch(e){out.innerHTML='<p class="muted">No se pudo cargar el historial.</p>';}
 }
 cargarHist();
+async function generarQr() {
+  const url=document.getElementById('urlQr').value.trim();
+  const out=document.getElementById('resQr');
+  if(!url){out.innerHTML='<p class="muted">Escribe una URL.</p>';return;}
+  const src='/generar/qr?url='+encodeURIComponent(url);
+  out.innerHTML='<div style="margin-top:14px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">'
+    +'<img src="'+src+'" style="width:180px;height:180px;border-radius:8px;background:#fff;padding:6px" alt="QR">'
+    +'<div style="display:flex;flex-direction:column;gap:8px">'
+    +'<a href="'+src+'" download="qr_malicioso.png"><button type="button">Descargar PNG</button></a>'
+    +'<button type="button" onclick="analizarQrGenerado(\''+url.replace(/'/g,"\\'")+'\')" >Analizar esta URL</button>'
+    +'</div></div>';
+}
+async function analizarQrGenerado(url) {
+  const out=document.getElementById('resQr');
+  out.innerHTML+='<p class="muted" style="margin-top:12px">Analizando…</p>';
+  try{
+    const resp=await fetch('/analizar/url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    const data=await resp.json();
+    const prev=out.querySelector('div');
+    out.innerHTML=''; if(prev) out.appendChild(prev);
+    out.innerHTML+=pinta(data); cargarHist();
+  }catch(e){out.innerHTML+='<p class="muted">Error: '+e+'</p>';}
+}
 </script>
 </body>
 </html>"""
