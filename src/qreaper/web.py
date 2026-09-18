@@ -157,21 +157,24 @@ async function cargarHist() {
   }catch(e){out.innerHTML='<p class="muted">No se pudo cargar el historial.</p>';}
 }
 cargarHist();
-async function generarQr() {
+let _qrUrl='';
+async function generarQr(){
   const url=document.getElementById('urlQr').value.trim();
   const out=document.getElementById('resQr');
   if(!url){out.innerHTML='<p class="muted">Escribe una URL.</p>';return;}
+  _qrUrl=url;
   const src='/generar/qr?url='+encodeURIComponent(url);
   out.innerHTML='<div style="margin-top:14px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">'
     +'<img src="'+src+'" style="width:180px;height:180px;border-radius:8px;background:#fff;padding:6px" alt="QR">'
     +'<div style="display:flex;flex-direction:column;gap:8px">'
     +'<a href="'+src+'" download="qr_malicioso.png"><button type="button">Descargar PNG</button></a>'
-    +'<button type="button" onclick="analizarQrGenerado(\''+url.replace(/'/g,"\\'")+'\')" >Analizar esta URL</button>'
+    +'<button type="button" onclick="analizarQrGenerado()">Analizar esta URL</button>'
     +'</div></div>';
 }
-async function analizarQrGenerado(url) {
+async function analizarQrGenerado(){
+  const url=_qrUrl; if(!url) return;
   const out=document.getElementById('resQr');
-  out.innerHTML+='<p class="muted" style="margin-top:12px">Analizando…</p>';
+  out.innerHTML+='<p class="muted" style="margin-top:12px">Analizando...</p>';
   try{
     const resp=await fetch('/analizar/url',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
     const data=await resp.json();
