@@ -1,64 +1,108 @@
-# QReaper 🔍  — Analizador Anti-Quishing
+# QReaper 🔍 — Anti-Quishing Analyzer
 
-Herramienta que detecta **phishing por código QR** (*quishing*): decodifica el QR de
-un correo, PDF o imagen, detona la URL oculta en un entorno seguro y emite un
-**veredicto + informe**.
+Detects **QR-code phishing (quishing)**: decodes QR codes from emails, PDFs or images, detonates the hidden URL in an isolated sandbox and returns a **risk verdict + report**.
 
-> El punto ciego de 2026: los filtros de correo NO leen códigos QR porque son
-> imágenes. La URL maliciosa es invisible hasta que alguien la escanea.
+> The blind spot of 2026: email filters can't read QR codes because they're images. The malicious URL is invisible until someone scans it. QReaper fixes that.
 
-## ¿Qué hace?
+## What it does
 
 ```
-archivo (email/PDF/imagen)
-   → [1] decode        extrae el/los QR → URL
-   → [2] análisis URL  whois, typosquat, deep-links, TLD
-   → [3] sandbox       abre la URL en navegador aislado → redirects + screenshot
-   → [4] scoring       combina señales → nota 0-100 + veredicto
-   → [5] informe       PDF / JSON / HTML
+file (email / PDF / image / raw QR)
+   → [1] decode       extract QR → URL
+   → [2] url analysis whois, typosquat detection, deep-links, risky TLD
+   → [3] sandbox      open URL in isolated Chromium → follows redirects + screenshot
+   → [4] scoring      combine signals → score 0-100 + DANGER / SUSPICIOUS / SAFE
+   → [5] report       PDF / JSON / HTML
 ```
 
-## Arranque rápido
+## Install
 
-> 👉 **¿Es tu primera vez en el proyecto? Ve a [`ARRANCA-AQUI.md`](ARRANCA-AQUI.md)**,
-> que lo explica paso a paso y sin dar nada por sabido.
-
-```powershell
+```bash
 git clone https://github.com/bdjoseluis/qreaper.git
 cd qreaper
-git checkout feat/TU-RAMA           # nadie trabaja en main
 python -m venv .venv
-.venv\Scripts\Activate.ps1          # Windows
-pip install -e .
-pip install pytest
-pytest -v                           # el smoke test en verde = entorno OK
+source .venv/bin/activate        # Linux / macOS
+# .venv\Scripts\Activate.ps1    # Windows
+pip install -e ".[todo]"
+playwright install chromium
 ```
 
-Cuando los módulos estén implementados:
+## Use as a CLI
 
-```powershell
-qreaper analizar datasets/legitimos/ejemplo.png
+```bash
+qreaper analizar path/to/image.png
+qreaper analizar path/to/email.eml --formato pdf
 ```
 
-## Módulos y responsables
+## Use as an API
 
-| # | Módulo | Archivo | Responsable | Rama |
-|---|--------|---------|-------------|------|
-| 1 | Ingesta + Decode | `src/qreaper/decode.py` | Andrés (DAM) | `feat/decode-andres` |
-| 2 | Análisis estático de URL | `src/qreaper/analisis_url.py` | Alex (teleco) | `feat/analisis-url-alex` |
-| 3 | Sandbox de detonación | `src/qreaper/sandbox.py` | Jose | `feat/nucleo-jose` |
-| 4 | Scoring | `src/qreaper/scoring.py` | Jose | `feat/nucleo-jose` |
-| 5 | Informe | `src/qreaper/informe.py` | JuanFran (teleco) | `feat/informe-juanfran` |
-| 6 | Interfaz (CLI/web) + Docs | `src/qreaper/cli.py` | Ismael (teleco) | `feat/interfaz-ismael` |
+```bash
+qreaper-api          # starts FastAPI on http://localhost:8000
+# interactive docs → http://localhost:8000/docs
+# web UI           → http://localhost:8000/app
+```
 
-**Los contratos entre módulos están en [`CONTRATOS.md`](CONTRATOS.md). Léelo ANTES de picar código.**
+## Use as an MCP tool (Claude Code / Claude Desktop)
 
-## Reglas de equipo
+Register the server once:
 
-- Cada uno trabaja en **su rama** (ver tabla de arriba).
-- Nada se toca en `main` directo → Pull Request → Jose revisa y mergea.
-- Ningún módulo depende de otro: **todos pueden arrancar a la vez**, porque las
-  interfaces están cerradas en [`CONTRATOS.md`](CONTRATOS.md).
-- Tu tarea está hecha cuando **su test pasa**: `pytest tests/test_contratos.py -k tu_modulo -v`
+```bash
+claude mcp add qreaper -- qreaper-mcp
+```
 
-Proyecto del Máster de Ciberseguridad · Evolve Academy · 2026
+Then just talk to Claude:
+
+> *"Analyze this suspicious URL: https://correos-es.pago-pendiente.top/pago"*  
+> *"Scan this attached image for malicious QR codes"*  
+> *"Show me the last 10 phishing detections"*
+
+Claude will call `analizar_url`, `analizar_archivo` or `historial` automatically.
+
+### Available MCP tools
+
+| Tool | Description |
+|------|-------------|
+| `analizar_url(url)` | Analyze a URL → verdict + score + reasons |
+| `analizar_archivo(ruta)` | Scan a local file for QR codes and analyze each URL |
+| `historial(limite, veredicto)` | Query stored analysis history |
+
+## Live demo
+
+Public instance: **https://qreaper.b-dev.es**  
+Web UI: **https://qreaper.b-dev.es/app**  
+API docs: **https://qreaper.b-dev.es/docs**
+
+## Deploy with Docker
+
+```bash
+cd deploy
+docker compose -f docker-compose.vps.yml up -d --build
+```
+
+Traefik-ready. Chromium sandbox included.
+
+## Environment variables
+
+| Variable | Values | Default | Description |
+|----------|--------|---------|-------------|
+| `QREAPER_SANDBOX` | `local` / `off` | `local` | `off` disables Chromium detonation |
+| `QREAPER_EN_CONTENEDOR` | `1` | — | Set inside Docker: enables `--no-sandbox` for Chromium |
+
+## Project structure
+
+```
+src/qreaper/
+├── decode.py        # QR extraction (pyzbar / PyMuPDF / eml)
+├── analisis_url.py  # static URL signals
+├── sandbox.py       # Playwright Chromium detonation
+├── scoring.py       # risk scoring engine
+├── informe.py       # PDF / HTML / JSON reports
+├── pipeline.py      # orchestrator
+├── api.py           # FastAPI REST layer
+├── mcp_server.py    # MCP server (stdio)
+└── cli.py           # Click CLI
+```
+
+---
+
+Built at Evolve Academy · Cybersecurity Master 2026
