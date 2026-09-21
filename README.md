@@ -1,6 +1,6 @@
 # QReaper 🔍 — Anti-Quishing MCP Tool
 
-**Give Claude this URL and it will install the MCP automatically:**
+**Install as MCP — paste this URL:**
 
 ```
 https://github.com/bdjoseluis/qreaper-mcp
@@ -14,15 +14,18 @@ QReaper detects **QR-code phishing (quishing)**: it extracts URLs hidden in QR c
 
 > QR codes are images — email filters can't read them. The malicious URL is invisible until someone scans it. QReaper fixes that.
 
-## Install as MCP (Claude Code)
+## Install as MCP
 
 ```bash
-pip install "git+https://github.com/bdjoseluis/qreaper-mcp.git[todo]"
+pip install "qreaper[todo] @ git+https://github.com/bdjoseluis/qreaper-mcp.git"
 playwright install chromium
 claude mcp add qreaper -- qreaper-mcp
 ```
 
-Then just talk to Claude:
+> Si `qreaper-mcp` no está en el PATH tras instalar, arráncalo con
+> `python -m qreaper.mcp_server` (mismo servidor).
+
+Once installed, your AI assistant can use it directly:
 
 > *"Analyze this URL: https://correos-es.pago-pendiente.top/multa"*  
 > *"Scan this image for malicious QR codes"*  
